@@ -1,0 +1,28 @@
+{
+  "name": "SMp3Play",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/main.js",
+  "scripts": {
+    "dev:electron": "NODE_ENV=development webpack --config webpack.electron.config.js --mode development && electron ."
+  },
+  "dependencies": {
+    "babel-loader": "^8.2.2",
+    "electron": "^11.1.1",
+    "webpack": "^5.11.0",
+    "webpack-cli": "^4.3.0",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SMCodesP/SMp3Play.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SMCodesP/SMp3Play/issues"
+  },
+  "homepage": "https://github.com/SMCodesP/SMp3Play#readme"
+}
