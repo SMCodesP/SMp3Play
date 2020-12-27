@@ -1,0 +1,48 @@
+:root {
+    --primary: #957FEF;
+    --secundary: #6272a4;
+    --tertiary: #ff79c6;
+    --fourth: #6272a4;
+
+    --primaryBackground: #282a36;
+    --secundaryBackground: #44475a;
+
+    --text: #f8f8f2;
+    --secundaryText: #bd93f9;
+    --tertiaryText: #f1fa8c;
+    --fourthText: #f1fa8c;
+    --fifthText: #ff79c6;
+    --inverseText: #333333;
+
+    --light: #fafafa;
+    --dark: #282a36;
+    --darkTwo: #44475a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    background: var(--primaryBackground);
+    color: var(--text);
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 5px;
+    border-radius: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--tertiary);
+    border-radius: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secundary);
+    border-radius: 7px;
+}
