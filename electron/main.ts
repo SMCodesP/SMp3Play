@@ -1,6 +1,8 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import cheerio from 'cheerio'
+import yts from 'yt-search'
 
 let mainWindow: Electron.BrowserWindow | null;
 

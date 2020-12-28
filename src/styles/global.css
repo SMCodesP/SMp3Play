@@ -31,6 +31,22 @@ body, html {
     color: var(--text);
 }
 
+textarea:focus, input:focus{
+    outline: none;
+}
+
+::placeholder {
+  color: var(--text);
+}
+
+:-ms-input-placeholder {
+  color: var(--text);
+}
+
+::-ms-input-placeholder {
+  color: var(--text);
+}
+
 ::-webkit-scrollbar {
     width: 7px;
     height: 5px;

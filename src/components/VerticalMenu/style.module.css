@@ -1,0 +1,54 @@
+.menu {
+	width: 72px;
+	height: 100vh;
+	background: var(--secundaryBackground);
+}
+
+.listItens {
+	width: 72px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.itemList {
+	background: var(--primaryBackground);
+	width: 58px;
+	height: 58px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 15px;
+	border-radius: calc(58px / 3);
+	cursor: pointer;
+	transition: .2s filter, .2s border-radius;
+}
+
+.itemList:hover {
+	filter: brightness(75%);
+	border-radius: calc(58px / 2);
+}
+
+.separator {
+	border: 1px solid var(--secundaryText);
+	width: 52px;
+	height: 1px;
+	margin: 7.5px;
+}
+
+.itemDivision {
+	background: var(--primaryBackground);
+	width: 45px;
+	height: 45px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 15px;
+	border-radius: calc(45px / 2);
+	cursor: pointer;
+	transition: .2s filter;
+}
+
+.itemDivision:hover {
+	filter: brightness(75%);
+}

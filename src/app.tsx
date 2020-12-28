@@ -3,11 +3,11 @@ import ReactDom from 'react-dom'
 
 import './styles/global.css'
 
+import Routes from './routes'
+
 const App = () => {
   return (
-    <h1>
-      Hello, world!
-    </h1>
+    <Routes />
   )
 }
 
