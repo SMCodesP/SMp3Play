@@ -13,6 +13,7 @@
     border-radius: 5px;
     cursor: pointer;
     align-self: center;
+    box-shadow: 3px 3px 6px 0 var(--primaryBackground);
     transition: .2s filter;
 }
 
