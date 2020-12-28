@@ -1,21 +1,41 @@
 import React, { useState } from 'react'
 
 import { ImSearch } from 'react-icons/im'
-
-const { ipcRenderer } = window.require('electron');
+import { FaRegPlayCircle } from "react-icons/fa";
+import { FiMoreVertical } from "react-icons/fi";
+import ProgressiveImage from 'react-progressive-graceful-image';
 
 import ContainerPage from '../components/ContainerPage'
 import VerticalMenu from '../components/VerticalMenu'
+import { Video } from '../interfaces/Video'
 
 import styles from '../styles/pages/search.module.css'
+import { usePlayer } from '../contexts/player';
 
 const Search = () => {
 	const [searchText, setSearchText] = useState('')
+	const [loading, setLoading] = useState(false)
+	const [videos, setVideos] = useState<Video[]>([])
+
+	const {playSound} = usePlayer()
 
 	const searchVideos = () => {
 
 		console.log(searchText)
 
+		setLoading(true)
+
+		fetch(`https://sm-p3-play-api.vercel.app/api/videos/search?q=${searchText}`)
+			.then((response) => {
+				return response.json()
+			})
+			.then((response: Video[]) => {
+				setVideos(response)
+				setLoading(false)
+			})
+			.catch((error) => {
+				alert(`Houve um erro ao pesquisar os videos: ${error}`)
+			})
 	}
 
 	const onFormSubmit = (e) => {
@@ -46,7 +66,44 @@ const Search = () => {
 				</form>
 
 				<div className={styles.containerVideos}>
-					
+					{videos.map((video) => (
+						<div className={styles.containerVideo} key={video.videoId}>
+							<p className={styles.titleVideo}>{video.title}</p>
+							<ProgressiveImage
+								src={video.image}
+								placeholder={`https://i.ytimg.com/vi/${video.videoId}/default.jpg`}
+							>
+							{(src: string, loading: boolean) => (
+								<img
+									style={{
+										filter: loading ? 'blur(5px)' : ''
+									}}
+									src={src}
+									alt={video.title}
+								/>
+							)}
+							</ProgressiveImage>
+							<div style={{
+								display: 'flex',
+								marginTop: '15px',
+								justifyContent: 'space-between',
+								alignItems: 'center'
+							}}>
+								<FaRegPlayCircle
+									size={22}
+									color="#ff79c6"
+									className={styles.iconUsage}
+									onClick={() => playSound(video)}
+								/>
+								<p className={styles.authorName}>{video.author.name}</p>
+								<FiMoreVertical
+									size={22}
+									color="#ff79c6"
+									className={styles.iconUsage}
+								/>
+							</div>
+						</div>
+					))}
 				</div>
 			</div>
 		</ContainerPage>

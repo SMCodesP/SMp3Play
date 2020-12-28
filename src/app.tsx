@@ -4,10 +4,18 @@ import ReactDom from 'react-dom'
 import './styles/global.css'
 
 import Routes from './routes'
+import PlayerProvider from './contexts/player';
+
+if (document.fonts) {
+  const fontFace = new FontFace("Roboto", "./fonts/Roboto-Regular.ttf");
+  document.fonts.add(fontFace);
+}
 
 const App = () => {
   return (
-    <Routes />
+    <PlayerProvider>
+      <Routes />
+    </PlayerProvider>
   )
 }
 

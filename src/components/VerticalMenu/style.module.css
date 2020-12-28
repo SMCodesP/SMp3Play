@@ -1,6 +1,6 @@
 .menu {
 	width: 72px;
-	height: 100vh;
+	min-height: 100vh;
 	background: var(--secundaryBackground);
 }
 
