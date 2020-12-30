@@ -27,6 +27,10 @@ const Player = ({
     const currentDuration = createRef<HTMLParagraphElement>()
     const totalDuration = createRef<HTMLParagraphElement>()
 
+    useEffect(() => {
+        setPlaying(true)
+    }, [video])
+
     function setSeek(value: number) {
         if (elementAudio && elementAudio.current) {
             elementAudio.current.currentTime = value
@@ -66,6 +70,7 @@ const Player = ({
     function resetPlayer() {
         console.log('terminou')
         props.setPlaying(null)
+        setPlaying(true)
     }
 
     useEffect(() => {
