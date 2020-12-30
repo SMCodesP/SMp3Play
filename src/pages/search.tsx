@@ -81,6 +81,15 @@ const Search = () => {
 						{videos.map((video) => (
 							<div className="containerVideo" key={video.videoId}>
 								<p className="titleVideo">{video.title}</p>
+								<p style={{
+									fontSize: 14,
+									marginBottom: 15,
+									marginTop: 5
+								}}><strong>Views:</strong> {new Intl.NumberFormat( 'en-US', {
+									maximumFractionDigits: 1,
+									notation: "compact",
+									compactDisplay: "short"
+								}).format(video.views)}</p>
 								<ProgressiveImage
 									src={video.image}
 									placeholder={`https://i.ytimg.com/vi/${video.videoId}/default.jpg`}
