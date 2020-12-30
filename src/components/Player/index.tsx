@@ -4,6 +4,8 @@ import { BsFillPlayFill, BsFillPauseFill } from "react-icons/bs";
 import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute2 } from "react-icons/im";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
+const { ipcRenderer } = window.require("electron");
+
 import { Video } from '../../interfaces/Video'
 import './style.css'
 import secondstoMinutes from '../../utils/secondsToMinutes';
@@ -11,6 +13,7 @@ import secondstoMinutes from '../../utils/secondsToMinutes';
 const Player = ({
 	video,
 	loading,
+	audioElement,
 	...props
 }: {
 	video: Video | null;
@@ -18,11 +21,13 @@ const Player = ({
 	title: string;
 	id: string;
 	loading: boolean;
+	audioElement: React.RefObject<HTMLAudioElement>;
+	setplaying: React.Dispatch<React.SetStateAction<Video | null>>
+	audioProps: any
 }) => {
 
 	const [playing, setPlaying] = useState(true)
 
-	const elementAudio = createRef<HTMLAudioElement>()
 	const seekAudio = createRef<HTMLInputElement>()
 	const seekVolume = createRef<HTMLInputElement>()
 	const currentDuration = createRef<HTMLParagraphElement>()
@@ -34,8 +39,8 @@ const Player = ({
 	}, [video])
 
 	function setSeek(value: number) {
-		if (elementAudio && elementAudio.current) {
-			elementAudio.current.currentTime = value
+		if (audioElement && audioElement.current) {
+			audioElement.current.currentTime = value
 		}
 	}
 
@@ -45,15 +50,15 @@ const Player = ({
 	
 	function timeUpdateProgress() {
 		if (currentDuration.current)
-			currentDuration.current.innerText = secondstoMinutes(elementAudio.current?.currentTime || 0)
+			currentDuration.current.innerText = secondstoMinutes(audioElement.current?.currentTime || 0)
 		if (seekAudio.current) {
-			seekAudio.current.value = String(Math.floor(elementAudio.current?.currentTime || 0) * 100)
+			seekAudio.current.value = String(Math.floor(audioElement.current?.currentTime || 0) * 100)
 		}
 	}
 
 	useEffect(() => {
-		if (elementAudio.current) {
-			elementAudio.current.ontimeupdate = () => timeUpdateProgress()
+		if (audioElement.current) {
+			audioElement.current.ontimeupdate = () => timeUpdateProgress()
 		}
 		if (seekAudio.current) {
 			seekAudio.current.addEventListener('input', timeUpdate)
@@ -70,20 +75,20 @@ const Player = ({
 
 	function volumeUpdateSeek() {
 		if (seekVolume.current && volumeIndication.current) {
-			localStorage.setItem('volume', String(Math.floor((elementAudio.current?.volume || 0) * 100)))
-			volumeIndication.current.innerText = String(Math.floor((elementAudio.current?.volume || 0) * 100)) + "%"
-			seekVolume.current.value = String((elementAudio.current?.volume || 0) * 100)
+			localStorage.setItem('volume', String(Math.floor((audioElement.current?.volume || 0) * 100)))
+			volumeIndication.current.innerText = String(Math.floor((audioElement.current?.volume || 0) * 100)) + "%"
+			seekVolume.current.value = String((audioElement.current?.volume || 0) * 100)
 		}
 	}
 	function volumeUpdate() {
-		if (seekVolume.current && elementAudio.current) {
-			elementAudio.current.volume = Number(seekVolume.current.value) / 100
+		if (seekVolume.current && audioElement.current) {
+			audioElement.current.volume = Number(seekVolume.current.value) / 100
 		}
 	}
 
 	useEffect(() => {
-		if (elementAudio.current) {
-			elementAudio.current.onvolumechange = () => volumeUpdateSeek()
+		if (audioElement.current) {
+			audioElement.current.onvolumechange = () => volumeUpdateSeek()
 		}
 		if (seekVolume.current) {
 			seekVolume.current.addEventListener('input', volumeUpdate)
@@ -99,48 +104,53 @@ const Player = ({
 	}, [seekVolume])
 
 	function resetPlayer() {
-		props.setPlaying(null)
+		props.setplaying(null)
 		setPlaying(true)
 	}
 
 	useEffect(() => {
-		if (elementAudio.current && seekAudio.current && seekVolume.current) {
-			elementAudio.current.addEventListener('ended', resetPlayer)
+		if (audioElement.current && seekAudio.current && seekVolume.current) {
+			audioElement.current.addEventListener('ended', resetPlayer)
 
 			seekVolume.current.value = localStorage.getItem('volume') || '100'
 
-			elementAudio.current.onloadeddata = () => {
+			audioElement.current.onloadeddata = () => {
+	            ipcRenderer.send('notification', {
+	                title: 'Tocando uma nova música!',
+	                body: `A música "${video?.title}" está sendo tocada.`
+	            })
+
 				if (totalDuration.current) {
-					totalDuration.current.innerText = secondstoMinutes(elementAudio.current?.duration || 0)
+					totalDuration.current.innerText = secondstoMinutes(audioElement.current?.duration || 0)
 				}
 
-				if (elementAudio.current)
-					elementAudio.current.volume = Number(localStorage.getItem('volume') || '100') / 100
+				if (audioElement.current)
+					audioElement.current.volume = Number(localStorage.getItem('volume') || '100') / 100
 
 				if (seekAudio.current) {
 					seekAudio.current.value = '0'
 					seekAudio.current.step = '0'
-					seekAudio.current.max = String(Math.floor(elementAudio.current?.duration || 0) * 100) || '1'
+					seekAudio.current.max = String(Math.floor(audioElement.current?.duration || 0) * 100) || '1'
 				}
 			}
 		}
 
 		return () => {
-			elementAudio.current?.removeEventListener('ended', resetPlayer)
+			audioElement.current?.removeEventListener('ended', resetPlayer)
 		}
-	}, [elementAudio])
+	}, [audioElement])
 
 	useEffect(() => {
-		playing ? elementAudio.current?.play() : elementAudio.current?.pause()
+		playing ? audioElement.current?.play() : audioElement.current?.pause()
 	}, [playing])
 
 	return (video !== null) ? (
 		<>
 			<SkeletonTheme color="#282a36" highlightColor="#44475a">
 				{!loading && <audio
-					ref={elementAudio}
+					ref={audioElement}
 					autoPlay
-					{...props}
+					{...props.audioProps}
 				></audio>}
 				<div className="control">
 					{loading ? (
@@ -230,7 +240,7 @@ const Player = ({
 									name="progress"
 									id="progress"
 									min="0"
-									max={elementAudio.current?.duration}
+									max={audioElement.current?.duration}
 									step="1"
 									className="progressBar"
 								/>}

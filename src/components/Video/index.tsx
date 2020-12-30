@@ -76,6 +76,7 @@ const VideoComponent = ({ video, playSound }: { video: Video, playSound(video: V
 	function renderMenuItem(menuItem: MenuItem) {
 		return !!(menuItem.subMenuItems && menuItem.subMenuItems.length) ? (
 			<li
+				key={menuItem.key}
 				style={{
 					display: 'flex',
 				    flexDirection: 'column',
@@ -97,6 +98,7 @@ const VideoComponent = ({ video, playSound }: { video: Video, playSound(video: V
 			</li>
 		) : (
 			<MenuItem
+				key={menuItem.key}
 				onClick={(e) => {
 					if (menuItem.onClick) {
 						menuItem.onClick(e, {

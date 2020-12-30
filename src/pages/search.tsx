@@ -77,7 +77,7 @@ const Search = () => {
 					<center><h1>Pesquise uma música para ouvir</h1></center>
 				) : (
 					<div className="containerVideos">
-						{videos.map((video) => <VideoComponent video={video} playSound={playSound || function(video: Video) {}} />)}
+						{videos.map((video) => <VideoComponent key={video.videoId} video={video} playSound={playSound || function(video: Video) {}} />)}
 					</div>
 				)}
 			</div>

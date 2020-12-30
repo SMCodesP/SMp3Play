@@ -22,6 +22,12 @@
     "appId": "tk.smcodes.smp3play",
     "directories": {
       "output": "dist"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Audio"
     }
   },
   "dependencies": {

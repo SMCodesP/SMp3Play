@@ -32,16 +32,18 @@ const VerticalMenu = () => {
 						/>
 					</li>
 				</a>
+				<a href="#/smp3/playlists">
+					<li className="itemDivision">
+						<RiPlayListFill
+							size={18}
+							color="#957FEF"
+						/>
+					</li>
+				</a>
 				<li className="itemDivision">
 					<ImFolderDownload
 						size={18}
 						color="#6272a4"
-					/>
-				</li>
-				<li className="itemDivision">
-					<RiPlayListFill
-						size={18}
-						color="#957FEF"
 					/>
 				</li>
 			</ul>

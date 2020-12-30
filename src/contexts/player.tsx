@@ -20,6 +20,10 @@ const PlayerProvider: React.FC = ({ children }) => {
   
     function playSound(video: Video) {
 
+        if (audioElement.current) {
+            audioElement.current.pause()
+        }
+
         if (loading)
             return alert('Já tem uma música iniciada, por favor espere carregar para iniciar outra.')
 
@@ -35,10 +39,6 @@ const PlayerProvider: React.FC = ({ children }) => {
 
         ipcRenderer.on('videomp3', () => {
             setLoading(false)
-            ipcRenderer.send('notification', {
-                title: 'Play new music!',
-                body: `A música "${video.title}" está sendo tocada.`
-            })
         })
     }
 
@@ -49,12 +49,18 @@ const PlayerProvider: React.FC = ({ children }) => {
             playing,
         }}>
             {children}
+
             <Player
-                src={playing?.src || ''}
-                title={playing?.title || ''}
+                audioProps={{
+                    id: "playerAudio",
+                    src: playing?.src || '',
+                    title: playing?.title || '',
+                }}
                 id="playerAudio"
+                title={playing?.title || ''}
+                audioElement={audioElement}
                 video={playing}
-                setPlaying={setPlaying}
+                setplaying={setPlaying}
                 loading={loading}
             />
         </PlayerContext.Provider>
