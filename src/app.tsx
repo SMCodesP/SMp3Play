@@ -13,10 +13,10 @@ title.innerText = "Teste"
 mainElement.appendChild(title)
 document.body.appendChild(mainElement);
 
-// if (document.fonts) {
-//   const fontFace = new FontFace("Roboto", "./fonts/Roboto-Regular.ttf");
-//   document.fonts.add(fontFace);
-// }
+if (document.fonts) {
+  const fontFace = new FontFace("Roboto", "./fonts/Roboto-Regular.ttf");
+  document.fonts.add(fontFace);
+}
 
 const App = () => {
   return (

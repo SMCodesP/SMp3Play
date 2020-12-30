@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, protocol } from 'electron';
+import { app, BrowserWindow, ipcMain, protocol, Notification } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import ytdl from 'ytdl-core';
@@ -44,6 +44,11 @@ function createWindow() {
 app.on('ready', createWindow);
 app.allowRendererProcessReuse = true;
 
+ipcMain.on('notification', (_event, arg: Electron.NotificationConstructorOptions | any) => {
+  console.log(arg)
+  new Notification(arg).show()
+})
+
 ipcMain.on('video', (event, arg: Video) => {
 
   const dir = app.getPath('userData') + `/SMp3Play`
@@ -68,6 +73,5 @@ ipcMain.on('video', (event, arg: Video) => {
       video: arg
     })
   })
-  
 
 })

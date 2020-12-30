@@ -35,6 +35,10 @@ const PlayerProvider: React.FC = ({ children }) => {
 
         ipcRenderer.on('videomp3', () => {
             setLoading(false)
+            ipcRenderer.send('notification', {
+                title: 'Play new music!',
+                body: `A música "${video.title}" está sendo tocada.`
+            })
         })
     }
 

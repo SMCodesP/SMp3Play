@@ -1,13 +1,11 @@
 import React, { useState } from 'react'
 
 import { ImSearch } from 'react-icons/im'
-import { FaRegPlayCircle } from "react-icons/fa";
-import { FiMoreVertical } from "react-icons/fi";
-import ProgressiveImage from 'react-progressive-graceful-image';
 import { Player } from '@lottiefiles/react-lottie-player';
 
 import ContainerPage from '../components/ContainerPage'
 import VerticalMenu from '../components/VerticalMenu'
+import VideoComponent from '../components/Video'
 import { Video } from '../interfaces/Video'
 
 import '../styles/pages/search.css'
@@ -22,7 +20,8 @@ const Search = () => {
 
 	const searchVideos = () => {
 
-		console.log(searchText)
+		if (searchText.length === 0)
+			return setVideos([])
 
 		setLoading(true)
 
@@ -78,58 +77,7 @@ const Search = () => {
 					<center><h1>Pesquise uma música para ouvir</h1></center>
 				) : (
 					<div className="containerVideos">
-						{videos.map((video) => (
-							<div className="containerVideo" key={video.videoId}>
-								<p className="titleVideo">{video.title}</p>
-								<p style={{
-									fontSize: 14,
-									marginBottom: 15,
-									marginTop: 5
-								}}><strong>Views:</strong> {new Intl.NumberFormat( 'en-US', {
-									maximumFractionDigits: 1,
-									notation: "compact",
-									compactDisplay: "short"
-								}).format(video.views)}</p>
-								<ProgressiveImage
-									src={video.image}
-									placeholder={`https://i.ytimg.com/vi/${video.videoId}/default.jpg`}
-								>
-								{(src: string, loading: boolean) => (
-									<img
-										style={{
-											filter: loading ? 'blur(5px)' : ''
-										}}
-										src={src}
-										alt={video.title}
-									/>
-								)}
-								</ProgressiveImage>
-								<div style={{
-									display: 'flex',
-									marginTop: '15px',
-									justifyContent: 'space-between',
-									alignItems: 'center'
-								}}>
-									<FaRegPlayCircle
-										size={22}
-										color="#ff79c6"
-										className="iconUsage"
-										onClick={() => {
-											console.log('playing...')
-											if (playSound !== undefined && video !== undefined) {
-												playSound(video)
-											}
-										}}
-									/>
-									<p className="authorName">{video.author.name}</p>
-									<FiMoreVertical
-										size={22}
-										color="#ff79c6"
-										className="iconUsage"
-									/>
-								</div>
-							</div>
-						))}
+						{videos.map((video) => <VideoComponent video={video} playSound={playSound || function(video: Video) {}} />)}
 					</div>
 				)}
 			</div>
