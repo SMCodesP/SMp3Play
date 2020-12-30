@@ -10,7 +10,7 @@ import ContainerPage from '../components/ContainerPage'
 import VerticalMenu from '../components/VerticalMenu'
 import { Video } from '../interfaces/Video'
 
-import styles from '../styles/pages/search.module.css'
+import '../styles/pages/search.css'
 import { usePlayer } from '../contexts/player';
 
 const Search = () => {
@@ -39,7 +39,7 @@ const Search = () => {
 			})
 	}
 
-	const onFormSubmit = (e) => {
+	const onFormSubmit = (e: { preventDefault: () => void; }) => {
 		e.preventDefault();
 		searchVideos()
 	}
@@ -48,20 +48,20 @@ const Search = () => {
 		<ContainerPage>
 			<VerticalMenu />
 
-			<div className={styles.container}>
-				<form className={styles.containerInput} onSubmit={onFormSubmit.bind(this)}>
+			<div className="container">
+				<form className="containerInput" onSubmit={onFormSubmit.bind(this)}>
 					<input
 						name="search"
 						type="text"
 						placeholder="Pesquisa uma música aqui."
-						className={styles.searchInput}
+						className="searchInput"
 						value={searchText}
 						onChange={(e) => setSearchText(e.target.value)}
 					/>
 					<ImSearch
 						size={18}
 						color="#ff79c6"
-						className={styles.searchIcon}
+						className="searchIcon"
 						onClick={searchVideos.bind(this)}
 					/>
 				</form>
@@ -77,10 +77,10 @@ const Search = () => {
 				) : videos.length === 0 ? (
 					<center><h1>Pesquise uma música para ouvir</h1></center>
 				) : (
-					<div className={styles.containerVideos}>
+					<div className="containerVideos">
 						{videos.map((video) => (
-							<div className={styles.containerVideo} key={video.videoId}>
-								<p className={styles.titleVideo}>{video.title}</p>
+							<div className="containerVideo" key={video.videoId}>
+								<p className="titleVideo">{video.title}</p>
 								<ProgressiveImage
 									src={video.image}
 									placeholder={`https://i.ytimg.com/vi/${video.videoId}/default.jpg`}
@@ -104,14 +104,19 @@ const Search = () => {
 									<FaRegPlayCircle
 										size={22}
 										color="#ff79c6"
-										className={styles.iconUsage}
-										onClick={() => playSound(video)}
+										className="iconUsage"
+										onClick={() => {
+											console.log('playing...')
+											if (playSound !== undefined && video !== undefined) {
+												playSound(video)
+											}
+										}}
 									/>
-									<p className={styles.authorName}>{video.author.name}</p>
+									<p className="authorName">{video.author.name}</p>
 									<FiMoreVertical
 										size={22}
 										color="#ff79c6"
-										className={styles.iconUsage}
+										className="iconUsage"
 									/>
 								</div>
 							</div>

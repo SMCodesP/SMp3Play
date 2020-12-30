@@ -7,9 +7,10 @@ const Home = () => {
 	return (
 		<ContainerPage>
 			<VerticalMenu />
-
+			
 			<h1>Home</h1>
 		</ContainerPage>
+
 	)
 }
 

@@ -4,41 +4,41 @@ import { FaHome } from 'react-icons/fa'
 import { ImSearch, ImFolderDownload } from 'react-icons/im'
 import { RiPlayListFill } from 'react-icons/ri'
 
-import { Link } from 'react-router-dom'
+// import { a } from 'react-router-dom'
 
-import styles from './style.module.css'
+import './style.css'
 
 const VerticalMenu = () => {
 	return (
-		<div className={styles.menu}>
+		<div className="menu">
 
-			<ul className={styles.listItens}>
-				<Link to="/">
-					<li className={styles.itemList}>
+			<ul className="listItens">
+				<a href="#/smp3/">
+					<li className="itemList">
 						<FaHome
 							size={28}
 							color="#ff79c6"
 						/>
 					</li>
-				</Link>
+				</a>
 
-				<hr className={styles.separator} />
+				<hr className="separator" />
 
-				<Link to="/search">
-					<li className={styles.itemDivision}>
+				<a href="#/smp3/search">
+					<li className="itemDivision">
 						<ImSearch
 							size={18}
 							color="#f1fa8c"
 						/>
 					</li>
-				</Link>
-				<li className={styles.itemDivision}>
+				</a>
+				<li className="itemDivision">
 					<ImFolderDownload
 						size={18}
 						color="#6272a4"
 					/>
 				</li>
-				<li className={styles.itemDivision}>
+				<li className="itemDivision">
 					<RiPlayListFill
 						size={18}
 						color="#957FEF"

@@ -10,30 +10,20 @@ let mainWindow: Electron.BrowserWindow | null;
 function createWindow() {
   protocol.registerFileProtocol('media', (request, callback) => {
     const pathname = decodeURI(request.url.replace('media:///', ''));
-// some custom resolver logic here
     callback(pathname);
   });
 
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false
     },
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL(`http://localhost:4000`);
-  } else {
-    mainWindow.loadURL(
-      url.format({
-        pathname: path.resolve(__dirname, '..', 'index.html'),
-        protocol: 'file:',
-        slashes: true
-      })
-    );
-  }
+  mainWindow.loadURL('file:///home/smcodes/projects/SMp3Play/dist/index.html');
   
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -44,9 +34,6 @@ app.on('ready', createWindow);
 app.allowRendererProcessReuse = true;
 
 ipcMain.on('video', (event, arg: Video) => {
-  
-  console.log('videourl', arg)
-  console.log(app.getPath('userData') + `/musics/${arg.videoId}.mp3`)
 
   const dir = app.getPath('userData') + `/SMp3Play`
 

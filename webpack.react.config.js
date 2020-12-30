@@ -41,5 +41,5 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     filename: "js/[name].js",
   },
-  plugins: [new HtmlWebpackPlugin({ template: './index.html' }), new ExtractCssChunks()],
+  plugins: [new HtmlWebpackPlugin(), new ExtractCssChunks()],
 };

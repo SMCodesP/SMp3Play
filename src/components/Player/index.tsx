@@ -5,7 +5,7 @@ import { ImVolumeHigh, ImVolumeMedium, ImVolumeLow, ImVolumeMute2 } from "react-
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 import { Video } from '../../interfaces/Video'
-import styles from './style.module.css'
+import './style.css'
 import secondstoMinutes from '../../utils/secondsToMinutes';
 
 const Player = ({
@@ -102,12 +102,12 @@ const Player = ({
                 autoPlay
                 {...props}
             ></audio>}
-            <div className={styles.control}>
+            <div className="control">
                 {loading ? (
                     <div style={{
                         width: 128,
                         height: 72
-                    }} className={styles.thumbnail}>
+                    }} className="thumbnail">
                         <Skeleton
                             height={72}
                             width={128}
@@ -126,14 +126,14 @@ const Player = ({
                             }}
                             src={src}
                             alt={video.title}
-                            className={styles.thumbnail}
+                            className="thumbnail"
                         />
                     )}
                     </ProgressiveImage>
                 )}
 
-                <div className={styles.columnControl}>
-                    <p className={styles.title}>{loading ? <Skeleton /> : video.title}</p>
+                <div className="columnControl">
+                    <p className="title">{loading ? <Skeleton /> : video.title}</p>
                     <div style={{
                         width: '90%',
                         display: 'flex',
@@ -169,14 +169,14 @@ const Player = ({
                                     color="#f1fa8c"
                                     size={26}
                                     onClick={() => setPlaying((currentPlaying) => !currentPlaying)}
-                                    className={styles.iconPlay}
+                                    className="iconPlay"
                                 />
                             ) : (
                                 <BsFillPlayFill
                                     color="#f1fa8c"
                                     size={26}
                                     onClick={() => setPlaying((currentPlaying) => !currentPlaying)}
-                                    className={styles.iconPlay}
+                                    className="iconPlay"
                                 />
                             )}
                             {loading ? <Skeleton
@@ -192,7 +192,7 @@ const Player = ({
                                 min="0"
                                 max={elementAudio.current?.duration}
                                 step="1"
-                                className={styles.progressBar}
+                                className="progressBar"
                             />}
                         </div>
                         <p ref={totalDuration} style={{
@@ -205,7 +205,7 @@ const Player = ({
                     </div>
                 </div>
 
-                <div className={styles.containerInformation}>
+                <div className="containerInformation">
                     {loading ? (
                         <Skeleton
                             width={26}
@@ -214,7 +214,7 @@ const Player = ({
                     ) : <ImVolumeHigh
                         color="#bd93f9"
                         size={26}
-                        className={styles.iconVolume}
+                        className="iconVolume"
                     />}
                 </div>
             </div>
