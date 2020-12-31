@@ -25,8 +25,12 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadURL(`http://localhost:4000`);
-  mainWindow.webContents.openDevTools();
+  if (process.env.NODE_ENV === "production") {
+    mainWindow.loadURL('file://' + path.resolve('.', 'index.html'));
+  } else {
+    mainWindow.loadURL(`http://localhost:4000`);
+    mainWindow.webContents.openDevTools();
+  }
 
   mainWindow.on('closed', () => {
     mainWindow = null;
