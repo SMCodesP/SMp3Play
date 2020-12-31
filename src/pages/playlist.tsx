@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createRef } from 'react'
 
 import ProgressiveImage from 'react-progressive-graceful-image';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
@@ -35,6 +35,8 @@ const PlaylistPage = ({ match }: {
 	const [listMusic, setListMusic] = useState<boolean>(true)
 	const [titleEditing, setTitleEditing] = useState<boolean>(false)
 	const [title, setTitle] = useState<string>(playlist.name)
+
+	const inputTitle = createRef<HTMLInputElement>()
 
 	const history = useHistory()
 	const { play, setTitlePlaylist, updatePlaylist } = usePlaylists()
@@ -75,17 +77,25 @@ const PlaylistPage = ({ match }: {
 		e.preventDefault()
 
 		if (setTitlePlaylist) {
+			let newTitle = title
 			if (title.length === 0) {
+				newTitle = 'Untitled'
 				setTitle('Untitled')
 			}
-			setTitlePlaylist(playlist.id, title)
+			setTitlePlaylist(playlist.id, newTitle)
 			setPlaylist((state) => ({
 				...state,
-				name: title
+				name: newTitle
 			}))
 			setTitleEditing(false)
 		}
 	}
+
+	useEffect(() => {
+		if (titleEditing) {
+			inputTitle.current.focus()
+		}
+	}, [titleEditing])
 
 	useEffect(() => {
 		if (updatePlaylist) {
@@ -163,6 +173,7 @@ const PlaylistPage = ({ match }: {
 								{titleEditing ? (
 									<form onSubmit={handleTitleEditingForm}>
 										<input
+											ref={inputTitle}
 											name="title"
 											type="text"
 											value={title}
