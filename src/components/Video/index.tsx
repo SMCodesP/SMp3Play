@@ -166,7 +166,6 @@ const VideoComponent = ({ video, playSound }: { video: Video, playSound(video: V
 					color="#ff79c6"
 					className="iconUsage"
 					onClick={() => {
-						console.log('playing...')
 						if (playSound !== undefined && video !== undefined) {
 							playSound(video)
 						}

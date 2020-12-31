@@ -48,8 +48,6 @@ ipcMain.on('video', (event, arg: Video) => {
     fs.mkdirSync(dir)
   }
 
-  console.log(fs.existsSync(`${dir}/${arg.videoId}.mp3`))
-
   if (!fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
     const stream = ytdl(arg.url, {
       quality: 'highestaudio',
@@ -72,6 +70,4 @@ ipcMain.on('video', (event, arg: Video) => {
       video: arg
     })
   }
-
-
 })

@@ -85,7 +85,7 @@ const Player = ({
 
 	useEffect(() => {
 		if (audioElement.current) {
-			audioElement.current.addEventListener('onvolumechange', volumeUpdateSeek)
+			audioElement.current.onvolumechange = () => volumeUpdateSeek()
 		}
 		if (seekVolume.current) {
 			seekVolume.current.addEventListener('input', volumeUpdate)
@@ -93,9 +93,6 @@ const Player = ({
 		}
 
 		return () => {
-			if (audioElement.current) {
-				audioElement.current.removeEventListener('onvolumechange', volumeUpdateSeek)
-			}
 			if (seekVolume.current) {
 				seekVolume.current?.removeEventListener('input', volumeUpdate)
 				seekVolume.current?.removeEventListener('change', volumeUpdate)
