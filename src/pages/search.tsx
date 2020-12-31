@@ -48,7 +48,7 @@ const Search = () => {
 			<VerticalMenu />
 
 			<div className="container">
-				<form className="containerInput" onSubmit={onFormSubmit.bind(this)}>
+				<form className="containerInput" onSubmit={onFormSubmit}>
 					<input
 						name="search"
 						type="text"
@@ -61,7 +61,7 @@ const Search = () => {
 						size={18}
 						color="#ff79c6"
 						className="searchIcon"
-						onClick={searchVideos.bind(this)}
+						onClick={searchVideos}
 					/>
 				</form>
 

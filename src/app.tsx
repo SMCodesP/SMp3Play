@@ -4,7 +4,10 @@ import ReactDom from 'react-dom'
 import './styles/global.css'
 
 import Routes from './routes'
+
 import PlayerProvider from './contexts/player';
+import PlaylistsProvider from './contexts/playlists';
+
 import Home from './pages/home'
 
 const mainElement = document.createElement('div');
@@ -20,11 +23,11 @@ if (document.fonts) {
 
 const App = () => {
   return (
-    <>
-      <PlayerProvider>
-        <Routes />
-      </PlayerProvider>
-    </>
+    <PlayerProvider>
+	    <PlaylistsProvider>
+	        <Routes />
+	    </PlaylistsProvider>
+    </PlayerProvider>
   )
 }
 

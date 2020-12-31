@@ -3,7 +3,9 @@ import * as path from 'path';
 import * as url from 'url';
 import ytdl from 'ytdl-core';
 import fs from 'fs';
+
 import { Video } from '../src/interfaces/Video';
+import { Playlist } from '../src/interfaces/Playlist';
 
 let mainWindow: Electron.BrowserWindow | null;
 
@@ -35,7 +37,6 @@ app.on('ready', createWindow);
 app.allowRendererProcessReuse = true;
 
 ipcMain.on('notification', (_event, arg: Electron.NotificationConstructorOptions | any) => {
-  console.log(arg)
   new Notification(arg).show()
 })
 
@@ -47,21 +48,30 @@ ipcMain.on('video', (event, arg: Video) => {
     fs.mkdirSync(dir)
   }
 
-  const stream = ytdl(arg.url, {
-    quality: 'highestaudio',
-    filter: 'audioonly'
-  }).pipe(fs.createWriteStream(`${dir}/${arg.videoId}.mp3`))
+  console.log(fs.existsSync(`${dir}/${arg.videoId}.mp3`))
 
-  mainWindow?.webContents.send("videomp3preload", {
-    path: `${dir}/${arg.videoId}.mp3`,
-    video: arg
-  })
+  if (!fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
+    const stream = ytdl(arg.url, {
+      quality: 'highestaudio',
+      filter: 'audioonly'
+    }).pipe(fs.createWriteStream(`${dir}/${arg.videoId}.mp3`))
 
-  stream.on('close', () => {
+    stream.on('close', () => {
+      mainWindow?.webContents.send("videomp3", {
+        path: `${dir}/${arg.videoId}.mp3`,
+        video: arg
+      })
+    })
+  } else {
+    mainWindow?.webContents.send("videomp3preload", {
+      path: `${dir}/${arg.videoId}.mp3`,
+      video: arg
+    })
     mainWindow?.webContents.send("videomp3", {
       path: `${dir}/${arg.videoId}.mp3`,
       video: arg
     })
-  })
+  }
+
 
 })

@@ -16,6 +16,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import { Video } from '../../interfaces/Video'
 
+import { usePlaylists } from '../../contexts/playlists'
+
 import './style.css'
 
 interface MenuItem {
@@ -29,41 +31,53 @@ interface MenuItem {
     subMenuItems?: Array<MenuItem>;
 }
 
-const menuItems: MenuItem[] = [
-  {
-    key: "1",
-    caption: "Play",
-    onClick: (_, {video, playSound, handleClose}) => {
-    	handleClose()
-    	playSound(video)
-    }
-  },
-  {
-    key: "group-1",
-    caption: "Add to playlist",
-    subMenuItems: [
-      {
-        key: "4",
-        caption: "#1 Mhrap Rap's",
-        onClick: () => {}
-      },
-      {
-        key: "5",
-        caption: "#2 Vmz Rap's",
-        onClick: () => {}
-      },
-      {
-        key: "6",
-        caption: "#3 7mz Rap's",
-        onClick: () => {}
-      }
-    ]
-  },
-];
-
 const VideoComponent = ({ video, playSound }: { video: Video, playSound(video: Video): void }) => {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [optionsActive, setOptionsActive] = useState(false)
+	const [menuItems, setMenuItems] = useState<Array<MenuItem>>([
+		{
+			key: "1",
+			caption: "Play",
+			onClick: (_, {video, playSound, handleClose}) => {
+				handleClose()
+				playSound(video)
+			}
+		},
+	])
+
+	const { playlists, addVideoInPlaylist } = usePlaylists()
+
+	const teste: Array<MenuItem> = []
+
+	useEffect(() => {
+		if (playlists) {
+			const playlistsMenuItems = playlists.map((playlist) => ({
+				key: playlist.id,
+				caption: playlist.name,
+				onClick: (_, {video, handleClose}) => {
+					if (addVideoInPlaylist) {
+						addVideoInPlaylist(playlist.id, video)
+						handleClose()
+					}
+				}
+			} as MenuItem))
+			setMenuItems([
+				{
+					key: "1",
+					caption: "Play",
+					onClick: (_, {video, playSound, handleClose}) => {
+						handleClose()
+						playSound(video)
+					}
+				},
+				{
+					key: "group-1",
+					caption: "Add to playlist",
+					subMenuItems: playlistsMenuItems
+				}
+			])
+		}
+	}, [playlists])
 
 	const handleClick = (event: any) => {
 		setAnchorEl(event.currentTarget);

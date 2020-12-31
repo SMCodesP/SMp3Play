@@ -10,6 +10,8 @@ import { Video } from '../../interfaces/Video'
 import './style.css'
 import secondstoMinutes from '../../utils/secondsToMinutes';
 
+import ControlPause from './ControlPause'
+
 const Player = ({
 	video,
 	loading,
@@ -26,17 +28,11 @@ const Player = ({
 	audioProps: any
 }) => {
 
-	const [playing, setPlaying] = useState(true)
-
 	const seekAudio = createRef<HTMLInputElement>()
 	const seekVolume = createRef<HTMLInputElement>()
 	const currentDuration = createRef<HTMLParagraphElement>()
 	const volumeIndication = createRef<HTMLParagraphElement>()
 	const totalDuration = createRef<HTMLParagraphElement>()
-
-	useEffect(() => {
-		setPlaying(true)
-	}, [video])
 
 	function setSeek(value: number) {
 		if (audioElement && audioElement.current) {
@@ -80,6 +76,7 @@ const Player = ({
 			seekVolume.current.value = String((audioElement.current?.volume || 0) * 100)
 		}
 	}
+
 	function volumeUpdate() {
 		if (seekVolume.current && audioElement.current) {
 			audioElement.current.volume = Number(seekVolume.current.value) / 100
@@ -88,7 +85,7 @@ const Player = ({
 
 	useEffect(() => {
 		if (audioElement.current) {
-			audioElement.current.onvolumechange = () => volumeUpdateSeek()
+			audioElement.current.addEventListener('onvolumechange', volumeUpdateSeek)
 		}
 		if (seekVolume.current) {
 			seekVolume.current.addEventListener('input', volumeUpdate)
@@ -96,6 +93,9 @@ const Player = ({
 		}
 
 		return () => {
+			if (audioElement.current) {
+				audioElement.current.removeEventListener('onvolumechange', volumeUpdateSeek)
+			}
 			if (seekVolume.current) {
 				seekVolume.current?.removeEventListener('input', volumeUpdate)
 				seekVolume.current?.removeEventListener('change', volumeUpdate)
@@ -105,7 +105,7 @@ const Player = ({
 
 	function resetPlayer() {
 		props.setplaying(null)
-		setPlaying(true)
+		// setPlaying(true)
 	}
 
 	useEffect(() => {
@@ -139,10 +139,6 @@ const Player = ({
 			audioElement.current?.removeEventListener('ended', resetPlayer)
 		}
 	}, [audioElement])
-
-	useEffect(() => {
-		playing ? audioElement.current?.play() : audioElement.current?.pause()
-	}, [playing])
 
 	return (video !== null) ? (
 		<>
@@ -214,21 +210,7 @@ const Player = ({
 											height={26}
 										/>
 									</span>
-								) : playing ? (
-									<BsFillPauseFill
-										color="#f1fa8c"
-										size={26}
-										onClick={() => setPlaying((currentPlaying) => !currentPlaying)}
-										className="iconPlay"
-									/>
-								) : (
-									<BsFillPlayFill
-										color="#f1fa8c"
-										size={26}
-										onClick={() => setPlaying((currentPlaying) => !currentPlaying)}
-										className="iconPlay"
-									/>
-								)}
+								) : <ControlPause />}
 								{loading ? <Skeleton
 									height={8}
 									style={{

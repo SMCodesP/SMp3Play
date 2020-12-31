@@ -56,6 +56,7 @@ const PlayerProvider: React.FC = ({ children }) => {
                     src: playing?.src || '',
                     title: playing?.title || '',
                 }}
+                src={playing?.src || ''}
                 id="playerAudio"
                 title={playing?.title || ''}
                 audioElement={audioElement}

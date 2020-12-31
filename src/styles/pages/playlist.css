@@ -1,0 +1,71 @@
+.containerPlaylistInformation {
+	margin: 15px;
+	display: flex;
+}
+
+.thumbnailPlaylistInformation {
+	width: 350px;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 5px;
+    column-gap: 2px;
+    background: var(--secundaryBackground);
+    box-shadow: 3px 3px 6px 0 var(--primaryBackground);
+    border-radius: 5px;
+}
+
+.thumbnailPlaylistInformation img {
+    width: 100%;
+    border-radius: 5px;
+    filter: brightness(75%);
+    border: 1px solid var(--primaryBackground);
+}
+
+.containerInformationMusic {
+	margin: 0 10px;
+}
+
+.informationList {
+	list-style: none;
+}
+
+.listMusics {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+.musicItemPlaylist {
+    display: flex;
+    margin: 5px 0;
+    padding: 15px;
+    background: var(--secundaryBackground);
+    border-radius: 5px;
+}
+
+.musicItemPlaylist p {
+    display: flex;
+    align-items: center;
+}
+
+.playPlaylistMusic {
+    cursor: pointer;
+    transition: .2s filter;
+}
+
+.playPlaylistMusic:hover {
+    filter: brightness(75%);
+}
+
+.inputTitle {
+    width: 100%;
+    background: var(--secundaryBackground);
+    border: 0;
+    border-radius: 5px;
+    padding: 5px;
+    color: var(--text);
+    font-size: 26px;
+    font-weight: bold;
+}
