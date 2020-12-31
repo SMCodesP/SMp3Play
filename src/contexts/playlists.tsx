@@ -12,6 +12,7 @@ export const PlaylistsContext = React.createContext<Partial<{
 	next(): void;
 	play(playlist: Playlist, start: string): void;
 	setTitlePlaylist(id: string, newTitle: string): void;
+	updatePlaylist(id: string, newPlaylist: Playlist): void;
 }>>({});
 
 const PlaylistsProvider: React.FC = ({ children }) => {
@@ -23,6 +24,14 @@ const PlaylistsProvider: React.FC = ({ children }) => {
 
 	function createPlaylist(playlist: Playlist) {
 		setPlaylists([...playlists, playlist])
+	}
+
+	function updatePlaylist(id: string, newPlaylist: Playlist) {
+		setPlaylists((state) => {
+			return state.map((playlist) => {
+				return playlist.id === id ? newPlaylist : playlist
+			})
+		})
 	}
 
 	function setTitlePlaylist(id: string, newTitle: string) {
@@ -107,7 +116,8 @@ const PlaylistsProvider: React.FC = ({ children }) => {
 			addVideoInPlaylist,
 			next,
 			play,
-			setTitlePlaylist
+			setTitlePlaylist,
+			updatePlaylist
 		}}>
 			{children}
 		</PlaylistsContext.Provider>

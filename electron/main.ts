@@ -51,6 +51,11 @@ ipcMain.on('video', (event, arg: Video) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
+  
+  mainWindow?.webContents.send("videomp3preload", {
+    path: `${dir}/${arg.videoId}.mp3`,
+    video: arg
+  })
 
   if (!fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
     const stream = ytdl(arg.url, {
@@ -65,10 +70,6 @@ ipcMain.on('video', (event, arg: Video) => {
       })
     })
   } else {
-    mainWindow?.webContents.send("videomp3preload", {
-      path: `${dir}/${arg.videoId}.mp3`,
-      video: arg
-    })
     mainWindow?.webContents.send("videomp3", {
       path: `${dir}/${arg.videoId}.mp3`,
       video: arg
