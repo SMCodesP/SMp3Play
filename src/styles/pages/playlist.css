@@ -43,6 +43,7 @@
     padding: 15px;
     background: var(--secundaryBackground);
     border-radius: 5px;
+    cursor: move !important;
 }
 
 .musicItemPlaylist p {

@@ -41,7 +41,34 @@ const PlaylistPage = ({ match }: {
 	const history = useHistory()
 	const { play, setTitlePlaylist, updatePlaylist } = usePlaylists()
 
+	function handleTitleEditingForm(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault()
+
+		if (setTitlePlaylist) {
+			let newTitle = title
+			if (title.length === 0) {
+				newTitle = 'Untitled'
+				setTitle('Untitled')
+			}
+			setTitlePlaylist(playlist.id, newTitle)
+			setPlaylist((state) => ({
+				...state,
+				name: newTitle
+			}))
+			setTitleEditing(false)
+		}
+	}
+
 	useEffect(() => {
+		if (titleEditing) {
+			inputTitle.current.focus()
+		}
+	}, [titleEditing])
+
+	useEffect(() => {
+		if (updatePlaylist) {
+			updatePlaylist(playlist.id, playlist)
+		}
 		if (!playlist) {
 			history.push('/playlists')
 			return;
@@ -71,36 +98,6 @@ const PlaylistPage = ({ match }: {
 		}
 
 		setLoading(false)
-	}, [])
-
-	function handleTitleEditingForm(e: React.FormEvent<HTMLFormElement>) {
-		e.preventDefault()
-
-		if (setTitlePlaylist) {
-			let newTitle = title
-			if (title.length === 0) {
-				newTitle = 'Untitled'
-				setTitle('Untitled')
-			}
-			setTitlePlaylist(playlist.id, newTitle)
-			setPlaylist((state) => ({
-				...state,
-				name: newTitle
-			}))
-			setTitleEditing(false)
-		}
-	}
-
-	useEffect(() => {
-		if (titleEditing) {
-			inputTitle.current.focus()
-		}
-	}, [titleEditing])
-
-	useEffect(() => {
-		if (updatePlaylist) {
-			updatePlaylist(playlist.id, playlist)
-		}
 	}, [playlist])
 
 	const reorder = (list: Video[], startIndex: number, endIndex: number): Video[] => {
