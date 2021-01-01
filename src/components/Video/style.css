@@ -49,3 +49,8 @@
     background: #282a36 !important;
     color: #bd93f9 !important;
 }
+
+.cancel .MuiMenuItem-root {
+    background: #282a36 !important;
+    color: #e02041 !important;
+}

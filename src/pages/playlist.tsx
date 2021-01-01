@@ -142,11 +142,12 @@ const PlaylistPage = ({ match }: {
 					}}>
 						<div className="containerPlaylistInformation">
 							<div className="thumbnailPlaylistInformation">
-								{thumbnails.map((thumbnail) => {
+								{thumbnails.map((thumbnail, index) => {
 									return (thumbnail !== null) ? (
 										<ProgressiveImage
 											src={thumbnail.src}
 											placeholder={thumbnail.placeholder}
+											key={`thumbnail-${index}`}
 										>
 										{(src: string, loading: boolean) => (
 											<img
@@ -161,6 +162,7 @@ const PlaylistPage = ({ match }: {
 										<Skeleton
 											height={92}
 											duration={1.2}
+											key={`thumbnail-${index}`}
 										/>
 									)
 								})}

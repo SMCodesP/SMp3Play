@@ -10,9 +10,11 @@ export const PlaylistsContext = React.createContext<Partial<{
 	addVideoInPlaylist(id: string, video: Video): void;
 	createPlaylist(playlist: Playlist): void;
 	next(): void;
-	play(playlist: Playlist, start: string): void;
+	play(playlist: Playlist, start: number): void;
 	setTitlePlaylist(id: string, newTitle: string): void;
+	deletePlaylist(id: string): void;
 	updatePlaylist(id: string, newPlaylist: Playlist): void;
+	removeMusicPlaylist(id: string, index: number): void;
 }>>({});
 
 const PlaylistsProvider: React.FC = ({ children }) => {
@@ -21,6 +23,10 @@ const PlaylistsProvider: React.FC = ({ children }) => {
 	const [musicIndexPlaying, setMusicIndexPlaying] = useState<number | null>(null);
 
 	const { playerSound, playing, playSound } = usePlayer()
+
+	function deletePlaylist(id: string) {
+		setPlaylists(playlists.filter((playlist) => playlist.id !== id))
+	}
 
 	function createPlaylist(playlist: Playlist) {
 		setPlaylists([...playlists, playlist])
@@ -32,6 +38,19 @@ const PlaylistsProvider: React.FC = ({ children }) => {
 				return playlist.id === id ? newPlaylist : playlist
 			})
 		})
+	}
+
+	function removeMusicPlaylist(id: string, index: number) {
+		let playlist = playlists.find((playlist) => playlist.id === id)
+		if (playlist && playlist.musics){
+			playlist.musics.splice(index, 1)
+
+			setPlaylists((state) => {
+				return state.map((statePlaylist) => {
+					return statePlaylist.id === id ? playlist || statePlaylist : statePlaylist
+				})
+			})
+		}
 	}
 
 	function setTitlePlaylist(id: string, newTitle: string) {
@@ -63,14 +82,13 @@ const PlaylistsProvider: React.FC = ({ children }) => {
 		}
 	}
 
-	function play(playlist: Playlist, start: string) {
+	function play(playlist: Playlist, index: number) {
 		if (playlist.musics) {
-			const videoStartIndex = playlist.musics.findIndex((music) => music.videoId === start)
-			const videoStart = playlist.musics[videoStartIndex]
+			const videoStart = playlist.musics[index]
 	
 			if (playSound) {
 				setPlayingPlaylist(playlist)
-				setMusicIndexPlaying(videoStartIndex)
+				setMusicIndexPlaying(index)
 				playSound(videoStart)
 			}
 		}
@@ -117,7 +135,9 @@ const PlaylistsProvider: React.FC = ({ children }) => {
 			next,
 			play,
 			setTitlePlaylist,
-			updatePlaylist
+			updatePlaylist,
+			deletePlaylist,
+			removeMusicPlaylist
 		}}>
 			{children}
 		</PlaylistsContext.Provider>

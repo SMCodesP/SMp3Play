@@ -1,15 +1,44 @@
 import React, { useState, useEffect } from 'react'
 
 import ProgressiveImage from 'react-progressive-graceful-image';
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import { Playlist } from '../../interfaces/Playlist'
 import { Thumbnail } from '../../interfaces/Thumbnail'
 
+import { usePlaylists } from '../../contexts/playlists'
+
 import './style.css'
 
-const PlaylistComponent = ({ playlist }: { playlist: Playlist }) => {
+const initialState = {
+  mouseX: null,
+  mouseY: null,
+};
+
+const PlaylistComponent = ({
+	playlist
+}: { playlist: Playlist }) => {
 	const [thumbnails, setThumbnails] = useState<Array<Thumbnail | null>>([])
+	const [position, setPosition] = React.useState<{
+		mouseX: null | number;
+		mouseY: null | number;
+	}>(initialState);
+
+	const { play, deletePlaylist } = usePlaylists()
+
+	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+		event.preventDefault();
+		setPosition({
+			mouseX: event.clientX - 2,
+			mouseY: event.clientY - 4,
+		});
+	};
+
+	const handleClose = () => {
+		setPosition(initialState);
+	};
 
 	useEffect(() => {
 		if (playlist.musics) {
@@ -37,16 +66,17 @@ const PlaylistComponent = ({ playlist }: { playlist: Playlist }) => {
 	}, [])
 
 	return (
-		<SkeletonTheme color="#282a36" highlightColor="#44475a">
+		<>
 			<a href={`#/smp3/playlist/${playlist.id}`} className="resetLink">
-				<div className="playlist">
+				<div className="playlist" onContextMenu={handleClick}>
 					<p className="playlistTitle">{playlist.name}</p>
 					<div className="thumbnailPlaylist">
-						{thumbnails.map((thumbnail) => {
+						{thumbnails.map((thumbnail, index) => {
 							return (thumbnail !== null) ? (
 								<ProgressiveImage
 									src={thumbnail.src}
 									placeholder={thumbnail.placeholder}
+									key={`thumbnail-${index}`}
 								>
 								{(src: string, loading: boolean) => (
 									<img
@@ -58,16 +88,55 @@ const PlaylistComponent = ({ playlist }: { playlist: Playlist }) => {
 								)}
 								</ProgressiveImage>
 							) : (
-								<Skeleton
-									height={92}
-									duration={1.2}
+								<div
+									style={{
+										height: 106,
+										width: '100%',
+										background: 'var(--primaryBackground)',
+										borderRadius: 5
+									}}
+									key={`thumbnail-${index}`}
 								/>
 							)
 						})}
 					</div>
 				</div>
+				<Menu
+			        keepMounted
+			        open={position.mouseY !== null}
+			        onClose={handleClose}
+			        anchorReference="anchorPosition"
+			        anchorPosition={
+			        	(position.mouseY !== null && position.mouseX !== null)
+			        		? { top: position.mouseY, left: position.mouseX }
+			        		: undefined
+			        }
+			    >
+			        <MenuItem
+			        	onClick={() => {
+							if (play) {
+								play(playlist, 0)
+							}
+			        		handleClose()
+			        	}}
+			        >
+			        	Play
+			        </MenuItem>
+			        <span className="cancel">
+				        <MenuItem
+				        	onClick={() => {
+								if (deletePlaylist) {
+									deletePlaylist(playlist.id)
+								}
+				        		handleClose()
+				        	}}
+				        >
+				        	Excluir
+				        </MenuItem>
+			        </span>
+			    </Menu>
 			</a>
-		</SkeletonTheme>
+		</>
 	)
 }
 
