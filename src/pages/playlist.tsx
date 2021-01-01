@@ -130,93 +130,95 @@ const PlaylistPage = ({ match }: {
 		}));
 	}
 
-	return (!loading && playlist) ? (
+	return (
 		<DragDropContext onDragEnd={onDragEnd}>
 			<SkeletonTheme color="#282a36" highlightColor="#44475a">
 				<ContainerPage>
 					<VerticalMenu />
 					
-					<div style={{
-						width: '100%',
-						display: 'flex',
-						flexDirection: 'column'
-					}}>
-						<div className="containerPlaylistInformation">
-							<div className="thumbnailPlaylistInformation">
-								{thumbnails.map((thumbnail, index) => {
-									return (thumbnail !== null) ? (
-										<ProgressiveImage
-											src={thumbnail.src}
-											placeholder={thumbnail.placeholder}
-											key={`thumbnail-${index}`}
-										>
-										{(src: string, loading: boolean) => (
-											<img
-												style={{
-													filter: loading ? 'blur(5px)' : ''
-												}}
-												src={src}
+					{(!loading && playlist) && (
+						<div style={{
+							width: '100%',
+							display: 'flex',
+							flexDirection: 'column'
+						}}>
+							<div className="containerPlaylistInformation">
+								<div className="thumbnailPlaylistInformation">
+									{thumbnails.map((thumbnail, index) => {
+										return (thumbnail !== null) ? (
+											<ProgressiveImage
+												src={thumbnail.src}
+												placeholder={thumbnail.placeholder}
+												key={`thumbnail-${index}`}
+											>
+											{(src: string, loading: boolean) => (
+												<img
+													style={{
+														filter: loading ? 'blur(5px)' : ''
+													}}
+													src={src}
+												/>
+											)}
+											</ProgressiveImage>
+										) : (
+											<Skeleton
+												height={92}
+												duration={1.2}
+												key={`thumbnail-${index}`}
 											/>
-										)}
-										</ProgressiveImage>
+										)
+									})}
+								</div>
+
+								<div className="containerInformationMusic">
+									{titleEditing ? (
+										<form onSubmit={handleTitleEditingForm}>
+											<input
+												ref={inputTitle}
+												name="title"
+												type="text"
+												value={title}
+												onChange={(e) => setTitle(e.target.value)}
+												className="inputTitle"
+											/>
+										</form>
 									) : (
-										<Skeleton
-											height={92}
-											duration={1.2}
-											key={`thumbnail-${index}`}
-										/>
-									)
-								})}
+										<h1
+											onClick={() => setTitleEditing(true)}
+											style={{
+												cursor: 'text',
+												fontSize: 26,
+												fontWeight: 'bold'
+											}}
+										>
+											{playlist.name}
+										</h1>
+									)}
+									<ul className="informationList">
+										<li><strong>Músicas:</strong> {playlist.musics?.length}</li>
+										<li><strong>Tempo total:</strong> {(playlist.musics && playlist.musics.length !== 0) ? secondsToDate(playlist.musics.map((music) => music.seconds).reduce((prev, current) => prev + current)) : 0}</li>
+									</ul>
+								</div>
 							</div>
 
-							<div className="containerInformationMusic">
-								{titleEditing ? (
-									<form onSubmit={handleTitleEditingForm}>
-										<input
-											ref={inputTitle}
-											name="title"
-											type="text"
-											value={title}
-											onChange={(e) => setTitle(e.target.value)}
-											className="inputTitle"
-										/>
-									</form>
-								) : (
-									<h1
-										onClick={() => setTitleEditing(true)}
-										style={{
-											cursor: 'text',
-											fontSize: 26,
-											fontWeight: 'bold'
-										}}
-									>
-										{playlist.name}
-									</h1>
-								)}
-								<ul className="informationList">
-									<li><strong>Músicas:</strong> {playlist.musics?.length}</li>
-									<li><strong>Tempo total:</strong> {(playlist.musics && playlist.musics.length !== 0) ? secondsToDate(playlist.musics.map((music) => music.seconds).reduce((prev, current) => prev + current)) : 0}</li>
-								</ul>
-							</div>
+							{(playlist.musics && playlist.musics.length === 0) && (
+								<h1 style={{
+									textAlign: 'center'
+								}}>Nenhuma música nessa playlist até o momento.</h1>
+							)}
+
+							{(playlist && playlist.musics && playlist.musics.length !== 0 && play && listMusic) && (
+								<ListMusicsPlaylist
+									playlist={playlist}
+									play={play}
+								/>
+							)}
 						</div>
-
-						{(playlist.musics && playlist.musics.length === 0) && (
-							<h1 style={{
-								textAlign: 'center'
-							}}>Nenhuma música nessa playlist até o momento.</h1>
-						)}
-
-						{(playlist && playlist.musics && playlist.musics.length !== 0 && play && listMusic) && (
-							<ListMusicsPlaylist
-								playlist={playlist}
-								play={play}
-							/>
-						)}
-					</div>
+					)}
 				</ContainerPage>
 			</SkeletonTheme>
 		</DragDropContext>
-	) : null
+	)
 }
 
 export default PlaylistPage

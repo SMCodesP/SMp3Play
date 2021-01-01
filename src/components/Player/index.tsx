@@ -16,7 +16,7 @@ const Player = ({
 	video,
 	loading,
 	audioElement,
-	ref,
+	reference,
 	...props
 }: {
 	video: Video | null;
@@ -24,7 +24,7 @@ const Player = ({
 	title: string;
 	id: string;
 	loading: boolean;
-	ref: React.RefObject<HTMLDivElement>;
+	reference: React.RefObject<HTMLDivElement>;
 	audioElement: React.RefObject<HTMLAudioElement>;
 	setplaying: React.Dispatch<React.SetStateAction<Video | null>>
 	audioProps: any
@@ -147,7 +147,7 @@ const Player = ({
 					autoPlay
 					{...props.audioProps}
 				></audio>}
-				<div className="control" ref={ref}>
+				<div className="control" ref={reference}>
 					{loading ? (
 						<div style={{
 							width: 128,

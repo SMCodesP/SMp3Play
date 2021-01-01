@@ -96,7 +96,7 @@ const PlayerProvider: React.FC = ({ children }) => {
 			{children}
 
 			<Player
-				ref={displayElement}
+				reference={displayElement}
 				audioProps={{
 					id: "playerAudio",
 					src: playing?.src || '',
