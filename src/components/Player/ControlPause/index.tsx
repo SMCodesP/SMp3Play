@@ -4,11 +4,24 @@ import { BsFillPlayFill, BsFillPauseFill } from "react-icons/bs";
 
 import { usePlayer } from '../../../contexts/player'
 
-const ControlPause = () => {
+const ControlPause = ({
+	audioElement
+}: { audioElement: React.RefObject<HTMLAudioElement> }) => {
 
 	const [playing, setPlaying] = useState(true)
 
 	const { playerSound } = usePlayer()
+
+	useEffect(() => {
+
+		audioElement.current?.addEventListener('pause', () => setPlaying(false))
+		audioElement.current?.addEventListener('play', () => setPlaying(true))
+
+		return () => {
+			audioElement.current?.removeEventListener('pause', () => setPlaying(false))
+			audioElement.current?.removeEventListener('play', () => setPlaying(true))
+		}
+	}, [audioElement])
 
 	useEffect(() => {
 

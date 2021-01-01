@@ -129,8 +129,9 @@ const MusicList = ({ playlist, play }) => {
 }
 
 
-const ListMusicsPlaylist = ({ playlist, setPlaylist, play }: {
-	playlist: Playlist
+const ListMusicsPlaylist = ({ playlist, play }: {
+	playlist: Playlist;
+	play(playlist: Playlist, start: number): void;
 }) => {
 	return (
 		<Droppable droppableId="list">

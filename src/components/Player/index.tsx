@@ -16,6 +16,7 @@ const Player = ({
 	video,
 	loading,
 	audioElement,
+	ref,
 	...props
 }: {
 	video: Video | null;
@@ -23,6 +24,7 @@ const Player = ({
 	title: string;
 	id: string;
 	loading: boolean;
+	ref: React.RefObject<HTMLDivElement>;
 	audioElement: React.RefObject<HTMLAudioElement>;
 	setplaying: React.Dispatch<React.SetStateAction<Video | null>>
 	audioProps: any
@@ -145,7 +147,7 @@ const Player = ({
 					autoPlay
 					{...props.audioProps}
 				></audio>}
-				<div className="control">
+				<div className="control" ref={ref}>
 					{loading ? (
 						<div style={{
 							width: 128,
@@ -207,7 +209,9 @@ const Player = ({
 											height={26}
 										/>
 									</span>
-								) : <ControlPause />}
+								) : <ControlPause
+									audioElement={audioElement}
+								/>}
 								{loading ? <Skeleton
 									height={8}
 									style={{

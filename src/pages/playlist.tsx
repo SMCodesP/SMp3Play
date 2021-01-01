@@ -4,7 +4,7 @@ import ProgressiveImage from 'react-progressive-graceful-image';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { useHistory } from 'react-router-dom';
 import {
-	DragDropContext
+	DragDropContext, DropResult
 } from 'react-beautiful-dnd'
 
 import ContainerPage from '../components/ContainerPage'
@@ -19,6 +19,7 @@ import { Playlist } from '../interfaces/Playlist'
 import { Thumbnail } from '../interfaces/Thumbnail'
 
 import { usePlaylists } from '../contexts/playlists'
+import { Video } from '../interfaces/Video';
 
 const PlaylistPage = ({ match }: {
 	match: {
@@ -60,7 +61,7 @@ const PlaylistPage = ({ match }: {
 	}
 
 	useEffect(() => {
-		if (titleEditing) {
+		if (titleEditing && inputTitle.current) {
 			inputTitle.current.focus()
 		}
 	}, [titleEditing])
@@ -118,7 +119,7 @@ const PlaylistPage = ({ match }: {
 		}
 
 		const newPlaylist = reorder(
-			playlist.musics,
+			playlist.musics || [],
 			result.source.index,
 			result.destination.index,
 		);
@@ -208,7 +209,6 @@ const PlaylistPage = ({ match }: {
 						{(playlist && playlist.musics && playlist.musics.length !== 0 && play && listMusic) && (
 							<ListMusicsPlaylist
 								playlist={playlist}
-								setPlaylist={setPlaylist}
 								play={play}
 							/>
 						)}
