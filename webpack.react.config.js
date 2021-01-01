@@ -2,6 +2,8 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractCssChunks = require("extract-css-chunks-webpack-plugin");
 
+const rootPath = path.resolve(__dirname)
+
 module.exports = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
@@ -34,7 +36,7 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: path.join(__dirname, "../dist/renderer"),
+    contentBase: path.join(rootPath, "dist/renderer"),
     historyApiFallback: true,
     compress: true,
     hot: true,
@@ -42,8 +44,11 @@ module.exports = {
     publicPath: "/",
   },
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(rootPath, "dist/renderer"),
     filename: "js/[name].js",
+    publicPath: './'
   },
-  plugins: [new HtmlWebpackPlugin(), new ExtractCssChunks()],
+  plugins: [new HtmlWebpackPlugin({
+    template: path.resolve(rootPath, 'index.html')
+  }), new ExtractCssChunks()],
 };

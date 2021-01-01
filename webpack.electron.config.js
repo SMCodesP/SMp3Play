@@ -1,5 +1,7 @@
 const path = require('path');
 
+const rootPath = path.resolve(__dirname)
+
 module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
@@ -19,7 +21,11 @@ module.exports = {
     ],
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(rootPath, 'dist'),
     filename: '[name].js',
   },
+  node: {
+    __dirname: false,
+    __filename: false
+  }
 };

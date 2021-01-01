@@ -5,7 +5,6 @@ import ytdl from 'ytdl-core';
 import fs from 'fs';
 
 import { Video } from '../src/interfaces/Video';
-import { Playlist } from '../src/interfaces/Playlist';
 
 let mainWindow: Electron.BrowserWindow | null;
 
@@ -26,7 +25,18 @@ function createWindow() {
   });
 
   if (process.env.NODE_ENV === "production") {
-    mainWindow.loadURL('file://' + path.resolve('.', 'index.html'));
+    console.log('url index', url.format({
+      pathname: path.join(__dirname, 'renderer/index.html'),
+      protocol: 'file:',
+      slashes: true
+    }))
+    mainWindow.loadURL(
+      url.format({
+        pathname: path.join(__dirname, 'renderer/index.html'),
+        protocol: 'file:',
+        slashes: true
+      })
+    );
   } else {
     mainWindow.loadURL(`http://localhost:4000`);
     mainWindow.webContents.openDevTools();

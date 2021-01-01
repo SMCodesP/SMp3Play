@@ -21,7 +21,8 @@
     "productName": "SMp3Play",
     "appId": "tk.smcodes.smp3play",
     "directories": {
-      "output": "dist"
+      "buildResources": "build",
+      "output": "release"
     },
     "linux": {
       "target": [
