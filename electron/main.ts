@@ -50,36 +50,32 @@ ipcMain.on('notification', (_event, arg: Electron.NotificationConstructorOptions
   new Notification(arg).show()
 })
 
-const downloadMusic = (music: Video, path: string): Promise<string> => new Promise((res, rej) => {
-  if (fs.existsSync(path))
-    return res(path)
+const downloadMusic = (music: Video, pathFile: string): Promise<string> => new Promise((res, rej) => {
+  if (fs.existsSync(pathFile))
+    return res(pathFile)
 
   const stream = ytdl(music.url, {
     quality: 'highestaudio',
     filter: 'audioonly'
-  }).pipe(fs.createWriteStream(path))
+  }).pipe(fs.createWriteStream(pathFile))
 
   stream.on('close', () => {
-    res(path)
+    res(pathFile)
   })
 })
 
 ipcMain.on('playlistDownload', (_event, arg: Playlist) => {
   const dir = app.getPath('userData') + `/SMp3Play`
 
-  let musicsDownload: Promise<string>[] = arg.musics?.map(async (music) => {
-    const path = `${dir}/${music.videoId}.mp3`
+  const musicsDownload: Promise<string>[] = arg.musics?.map(async (music) => {
+    const pathFile = `${dir}/${music.videoId}.mp3`
 
-    return await downloadMusic(music, path)
+    return await downloadMusic(music, pathFile)
   }) || []
 
   Promise.all(musicsDownload)
     .then((musics) => {
       mainWindow?.webContents.send('playlistDownloaded', musics)
-    })
-    .catch((err) => {
-      console.log('erro')
-      console.log(err)
     })
 })
 
@@ -91,34 +87,34 @@ ipcMain.on('video', (_event, arg: Video) => {
     fs.mkdirSync(dir)
   }
 
-  const path = `${dir}/music.mp3`
+  const pathFile = `${dir}/music.mp3`
 
   if (fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
     mainWindow?.webContents.send("videomp3preload", {
       path: `${dir}/${arg.videoId}.mp3`,
       video: arg
     })
-  
+
     mainWindow?.webContents.send("videomp3", {
       path: `${dir}/${arg.videoId}.mp3`,
       video: arg
     })
     return;
   }
-  
+
   mainWindow?.webContents.send("videomp3preload", {
-    path: path,
+    path: pathFile,
     video: arg
   })
 
   const stream = ytdl(arg.url, {
     quality: 'highestaudio',
     filter: 'audioonly'
-  }).pipe(fs.createWriteStream(path))
+  }).pipe(fs.createWriteStream(pathFile))
 
   stream.on('close', () => {
     mainWindow?.webContents.send("videomp3", {
-      path: path,
+      path: pathFile,
       video: arg
     })
   })
