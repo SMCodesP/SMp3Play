@@ -89,7 +89,10 @@ const PlayerProvider: React.FC = ({ children }) => {
 		setLoading(true)
 		ipcRenderer.send('video', video)
 
-		ipcRenderer.on('videomp3preload', (_event, arg) => {
+		ipcRenderer.on('videomp3preload', (_: any, arg: {
+			path: string;
+			video: Video;
+		}) => {
 			setPlaying({
 				...video,
 				src: 'media://' + arg.path,

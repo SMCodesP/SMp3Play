@@ -1,9 +1,6 @@
-export default function isInteractiveElement(node: EventTarget | null): boolean {
-    var intElems = [
-        //-- Must be uppercase
-        "A", "BUTTON", "INPUT", "TEXTAREA", "VIDEO", "MAP", "OBJECT"
-    ];
-    if (intElems.indexOf (node.nodeName) >= 0) {
+export default function isInteractiveElement(node: any): boolean {
+    const intElems = ["A", "BUTTON", "INPUT", "TEXTAREA", "VIDEO", "MAP", "OBJECT"];
+    if (intElems.indexOf(node.nodeName) >= 0) {
         return true;
     }
     else if (node.nodeName === "BODY") {

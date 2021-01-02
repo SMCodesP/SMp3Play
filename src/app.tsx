@@ -8,6 +8,10 @@ import Routes from './routes'
 import PlayerProvider from './contexts/player';
 import PlaylistsProvider from './contexts/playlists';
 
+declare class FontFace {
+  constructor(name: string, path: string);
+};
+
 if (document.fonts) {
   const fontFace = new FontFace("Roboto", "./fonts/Roboto-Regular.ttf");
   document.fonts.add(fontFace);
