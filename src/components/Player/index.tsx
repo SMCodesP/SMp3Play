@@ -11,6 +11,7 @@ import './style.css'
 import secondstoMinutes from '../../utils/secondsToMinutes';
 
 import ControlPause from './ControlPause'
+import ControlSpeed from './ControlSpeed'
 
 const Player = ({
 	video,
@@ -268,6 +269,11 @@ const Player = ({
 								className="iconVolume"
 							/>
 						</div>
+					)}
+					{!loading && (
+						<ControlSpeed
+							audioElement={audioElement}
+						/>
 					)}
 				</div>
 			</SkeletonTheme>

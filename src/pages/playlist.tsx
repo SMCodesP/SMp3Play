@@ -2,10 +2,13 @@ import React, { useState, useEffect, createRef } from 'react'
 
 import ProgressiveImage from 'react-progressive-graceful-image';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import Switch from '@material-ui/core/Switch';
 import { useHistory } from 'react-router-dom';
 import {
 	DragDropContext, DropResult
 } from 'react-beautiful-dnd'
+
+const { ipcRenderer } = window.require("electron");
 
 import ContainerPage from '../components/ContainerPage'
 import VerticalMenu from '../components/VerticalMenu'
@@ -33,6 +36,7 @@ const PlaylistPage = ({ match }: {
 	)
 	const [thumbnails, setThumbnails] = useState<Array<Thumbnail | null>>([])
 	const [loading, setLoading] = useState<boolean>(true)
+	const [checked, setChecked] = useState<boolean>(playlist.checkedDownload || false)
 	const [listMusic, setListMusic] = useState<boolean>(true)
 	const [titleEditing, setTitleEditing] = useState<boolean>(false)
 	const [title, setTitle] = useState<string>(playlist.name)
@@ -59,6 +63,18 @@ const PlaylistPage = ({ match }: {
 			setTitleEditing(false)
 		}
 	}
+
+
+
+	useEffect(() => {
+		if (checked) {
+			ipcRenderer.send('playlistDownload', playlist)
+		}
+		setPlaylist((state) => ({
+			...state,
+			checkedDownload: checked
+		}))
+	}, [checked])
 
 	useEffect(() => {
 		if (titleEditing && inputTitle.current) {
@@ -198,6 +214,22 @@ const PlaylistPage = ({ match }: {
 										<li><strong>Músicas:</strong> {playlist.musics?.length}</li>
 										<li><strong>Tempo total:</strong> {(playlist.musics && playlist.musics.length !== 0) ? secondsToDate(playlist.musics.map((music) => music.seconds).reduce((prev, current) => prev + current)) : 0}</li>
 									</ul>
+								</div>
+								
+								<div style={{
+									alignSelf: 'flex-end',
+									marginLeft: 'auto',
+									display: 'flex',
+									alignItems: 'center',
+								}}>
+									<p style={{
+										fontWeight: 'bold',
+										height: 'fit-content'
+									}}>Download playlist</p>
+									<Switch
+										checked={checked}
+										onChange={() => setChecked(!checked)}
+									/>
 								</div>
 							</div>
 

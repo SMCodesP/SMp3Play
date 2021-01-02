@@ -29,6 +29,20 @@ const PlayerProvider: React.FC = ({ children }) => {
 				audioElement.current?.paused ? audioElement.current.play() : audioElement.current?.pause()
 			}
 
+			if (keyCode === 40) {
+				event.preventDefault()
+				if (Number((audioElement.current.volume - 0.05).toFixed(2)) < 0)
+					return;
+				audioElement.current.volume = Number((audioElement.current.volume - 0.05).toFixed(2))
+			}
+
+			if (keyCode === 38) {
+				event.preventDefault()
+				if (Number((audioElement.current.volume + 0.05).toFixed(2)) > 1)
+					return;
+				audioElement.current.volume = Number((audioElement.current.volume + 0.05).toFixed(2))
+			}
+
 			if (keyCode === 76) {
 				event.preventDefault()
 				audioElement.current.currentTime += 10

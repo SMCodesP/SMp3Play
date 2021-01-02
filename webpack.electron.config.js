@@ -7,7 +7,10 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   devtool: 'source-map',
-  entry: './electron/main.ts',
+  entry: [
+    'babel-polyfill',
+    './electron/main.ts'
+  ],
   target: 'electron-main',
   module: {
     rules: [

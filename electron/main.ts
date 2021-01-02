@@ -5,6 +5,7 @@ import ytdl from 'ytdl-core';
 import fs from 'fs';
 
 import { Video } from '../src/interfaces/Video';
+import { Playlist } from '../src/interfaces/Playlist';
 
 let mainWindow: Electron.BrowserWindow | null;
 
@@ -25,11 +26,6 @@ function createWindow() {
   });
 
   if (process.env.NODE_ENV === "production") {
-    console.log('url index', url.format({
-      pathname: path.join(__dirname, 'renderer/index.html'),
-      protocol: 'file:',
-      slashes: true
-    }))
     mainWindow.loadURL(
       url.format({
         pathname: path.join(__dirname, 'renderer/index.html'),
@@ -54,35 +50,76 @@ ipcMain.on('notification', (_event, arg: Electron.NotificationConstructorOptions
   new Notification(arg).show()
 })
 
-ipcMain.on('video', (event, arg: Video) => {
+const downloadMusic = (music: Video, path: string): Promise<string> => new Promise((res, rej) => {
+  if (fs.existsSync(path))
+    return res(path)
+
+  const stream = ytdl(music.url, {
+    quality: 'highestaudio',
+    filter: 'audioonly'
+  }).pipe(fs.createWriteStream(path))
+
+  stream.on('close', () => {
+    res(path)
+  })
+})
+
+ipcMain.on('playlistDownload', (_event, arg: Playlist) => {
+  const dir = app.getPath('userData') + `/SMp3Play`
+
+  let musicsDownload: Promise<string>[] = arg.musics?.map(async (music) => {
+    const path = `${dir}/${music.videoId}.mp3`
+
+    return await downloadMusic(music, path)
+  }) || []
+
+  Promise.all(musicsDownload)
+    .then((musics) => {
+      mainWindow?.webContents.send('playlistDownloaded', musics)
+    })
+    .catch((err) => {
+      console.log('erro')
+      console.log(err)
+    })
+})
+
+ipcMain.on('video', (_event, arg: Video) => {
 
   const dir = app.getPath('userData') + `/SMp3Play`
 
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
   }
-  
-  mainWindow?.webContents.send("videomp3preload", {
-    path: `${dir}/${arg.videoId}.mp3`,
-    video: arg
-  })
 
-  if (!fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
-    const stream = ytdl(arg.url, {
-      quality: 'highestaudio',
-      filter: 'audioonly'
-    }).pipe(fs.createWriteStream(`${dir}/${arg.videoId}.mp3`))
+  const path = `${dir}/music.mp3`
 
-    stream.on('close', () => {
-      mainWindow?.webContents.send("videomp3", {
-        path: `${dir}/${arg.videoId}.mp3`,
-        video: arg
-      })
+  if (fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
+    mainWindow?.webContents.send("videomp3preload", {
+      path: `${dir}/${arg.videoId}.mp3`,
+      video: arg
     })
-  } else {
+  
     mainWindow?.webContents.send("videomp3", {
       path: `${dir}/${arg.videoId}.mp3`,
       video: arg
     })
+    return;
   }
+  
+  mainWindow?.webContents.send("videomp3preload", {
+    path: path,
+    video: arg
+  })
+
+  const stream = ytdl(arg.url, {
+    quality: 'highestaudio',
+    filter: 'audioonly'
+  }).pipe(fs.createWriteStream(path))
+
+  stream.on('close', () => {
+    mainWindow?.webContents.send("videomp3", {
+      path: path,
+      video: arg
+    })
+  })
 })

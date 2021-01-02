@@ -95,3 +95,16 @@
 .containerInformation:hover .volumeContainer {
     display: block !important;
 }
+
+.controlVelocity {
+    height: fit-content;
+    align-self: center;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s text-shadow;
+}
+
+.controlVelocity:hover {
+    text-shadow: 0 0 2px #fff;
+}
