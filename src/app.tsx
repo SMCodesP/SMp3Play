@@ -6,7 +6,6 @@ import './styles/global.css'
 import Routes from './routes'
 
 import PlayerProvider from './contexts/player';
-import PlaylistsProvider from './contexts/playlists';
 
 declare class FontFace {
   constructor(name: string, path: string);
@@ -20,9 +19,7 @@ if (document.fonts) {
 const App = () => {
   return (
     <PlayerProvider>
-	    <PlaylistsProvider>
 	      <Routes />
-	    </PlaylistsProvider>
     </PlayerProvider>
   )
 }
