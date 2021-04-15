@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import Swal from "sweetalert2";
+
 import { Video } from "../interfaces/Video";
 import { Playlist } from "../interfaces/Playlist";
 
@@ -79,13 +81,39 @@ const PlaylistsProvider: React.FC = ({ children }) => {
     });
   }
 
-  function addVideoInPlaylist(id: string, video: Video) {
+  function addVideoInPlaylist(
+    id: string,
+    video: Video,
+    options?: {
+      force?: boolean;
+    }
+  ) {
     const playlist = playlists.find(
       (playlistFinding) => playlistFinding.id === id
     );
 
     if (playlist) {
       if (playlist.musics) {
+        if (
+          (!options || !options.force) &&
+          playlist.musics.some((song) => song.videoId === video.videoId)
+        ) {
+          Swal.fire({
+            title: "Confirme!",
+            text:
+              "Na playlist seleciona já contém a música, você tem certeza que quer adiciona-la novamente?",
+            icon: "question",
+            showCancelButton: true,
+            cancelButtonText: "Cancelar",
+            confirmButtonText: "Adicionar",
+            preConfirm: () => {
+              addVideoInPlaylist(id, video, {
+                force: true,
+              });
+            },
+          });
+          return;
+        }
         playlist.musics = [...playlist.musics, video];
       } else {
         playlist.musics = [video];

@@ -196,16 +196,16 @@ const Player = ({
             </div>
           ) : (
             <ProgressiveImage
-              src={video.image}
-              placeholder={`https://i.ytimg.com/vi/${video.videoId}/default.jpg`}
+              src={video?.image || ''}
+              placeholder={`https://i.ytimg.com/vi/${video?.videoId}/default.jpg`}
             >
-              {(src: string, loading: boolean) => (
+              {(src: string, loadingImage: boolean) => (
                 <img
                   style={{
-                    filter: loading ? "blur(5px)" : "",
+                    filter: loadingImage ? "blur(5px)" : "",
                   }}
                   src={src}
-                  alt={video.title}
+                  alt={video?.title}
                   className="thumbnail"
                 />
               )}
@@ -213,7 +213,7 @@ const Player = ({
           )}
 
           <div className="columnControl">
-            <p className="title">{loading ? <Skeleton /> : video.title}</p>
+            <p className="title">{loading ? <Skeleton /> : video?.title}</p>
             <div
               style={{
                 width: "90%",
