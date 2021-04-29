@@ -1,13 +1,15 @@
 import * as React from "react";
 
-const { ipcRenderer } = window.require("electron");
+import { useDebouncedCallback } from "use-debounce";
 
 import Player from "../components/Player";
 
 import { Video } from "../interfaces/Video";
 import isInteractiveElement from "../utils/isInteractiveElement";
 
-import PlaylistsProvider from './playlists';
+import PlaylistsProvider from "./playlists";
+
+const { ipcRenderer } = window.require("electron");
 
 type PlayerType = Partial<{
   playerSound: React.RefObject<HTMLAudioElement>;
@@ -25,7 +27,7 @@ const PlayerProvider: React.FC = ({ children }) => {
   const audioElement = React.createRef<HTMLAudioElement>();
   const displayElement = React.createRef<HTMLDivElement>();
 
-  function keywordPressed(event: KeyboardEvent) {
+  const keywordPressed = (event: KeyboardEvent) => {
     const { keyCode } = event;
 
     if (!isInteractiveElement(event.target) && audioElement.current) {
@@ -37,13 +39,13 @@ const PlayerProvider: React.FC = ({ children }) => {
             ? audioElement.current.play()
             : audioElement.current?.pause(),
         40: () =>
-          Number((audioElement.current!.volume - 0.05).toFixed(2)) > 0
+          Number((audioElement.current!.volume - 0.05).toFixed(2)) >= 0
             ? (audioElement.current!.volume = Number(
                 (audioElement.current!.volume - 0.05).toFixed(2)
               ))
             : "",
         38: () =>
-          Number((audioElement.current!.volume + 0.05).toFixed(2)) < 1
+          Number((audioElement.current!.volume + 0.05).toFixed(2)) <= 1
             ? (audioElement.current!.volume = Number(
                 (audioElement.current!.volume + 0.05).toFixed(2)
               ))
@@ -55,10 +57,11 @@ const PlayerProvider: React.FC = ({ children }) => {
       };
 
       if (keys[keyCode]) {
+        event.preventDefault();
         keys[keyCode]();
       }
     }
-  }
+  };
 
   React.useEffect(() => {
     ipcRenderer.on(
@@ -108,22 +111,24 @@ const PlayerProvider: React.FC = ({ children }) => {
     >
       <PlaylistsProvider>
         {children}
-        {(playing != null || loading) && <Player
-          reference={displayElement}
-          audioProps={{
-            id: "playerAudio",
-            src: playing?.src || "",
-            title: playing?.title || "",
-          }}
-          src={playing?.src || ""}
-          id="playerAudio"
-          title={playing?.title || ""}
-          audioElement={audioElement}
-          setLoading={setLoading}
-          setPlaying={setPlaying}
-          video={playing}
-          loading={loading}
-        />}
+        {(playing != null || loading) && (
+          <Player
+            reference={displayElement}
+            audioProps={{
+              id: "playerAudio",
+              src: playing?.src || "",
+              title: playing?.title || "",
+            }}
+            src={playing?.src || ""}
+            id="playerAudio"
+            title={playing?.title || ""}
+            audioElement={audioElement}
+            setLoading={setLoading}
+            setPlaying={setPlaying}
+            video={playing}
+            loading={loading}
+          />
+        )}
       </PlaylistsProvider>
     </PlayerContext.Provider>
   );

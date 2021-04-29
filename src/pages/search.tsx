@@ -19,29 +19,25 @@ const Search = () => {
 
   const { playSound } = usePlayer();
 
-  const searchVideos = useDebouncedCallback(
-    () => {
-      if (searchText.length === 0) return setVideos([]);
+  const searchVideos = useDebouncedCallback(() => {
+    if (searchText.length === 0) return setVideos([]);
 
-      setLoading(true);
+    if (loading) return;
 
-      fetch(`https://sm-p3-play-api.vercel.app/api/search?q=${searchText}`)
-        .then((response) => {
-          return response.json();
-        })
-        .then((response: { videos: Video[] }) => {
-          setVideos(response.videos);
-          setLoading(false);
-        })
-        .catch((error) => {
-          alert(`Houve um erro ao pesquisar os videos: ${error}`);
-        });
-    },
-    1200,
-    {
-      maxWait: 1200,
-    }
-  );
+    setLoading(true);
+
+    fetch(`https://sm-p3-play-api.vercel.app/api/search?q=${searchText}`)
+      .then((response) => {
+        return response.json();
+      })
+      .then((response: { videos: Video[] }) => {
+        setVideos(response.videos);
+        setLoading(false);
+      })
+      .catch((error) => {
+        alert(`Houve um erro ao pesquisar os videos: ${error}`);
+      });
+  }, 1500);
 
   const onFormSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();

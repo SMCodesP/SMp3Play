@@ -1,53 +1,70 @@
-import React, { useState, useEffect, memo } from 'react'
+import React, { useState, useEffect, memo } from "react";
 
 import { BsFillPlayFill, BsFillPauseFill } from "react-icons/bs";
+import { useDebouncedCallback } from "use-debounce";
 
-import { usePlayer } from '../../../contexts/player'
+import { usePlayer } from "../../../contexts/player";
 
 const ControlPause = ({
-	audioElement
-}: { audioElement: React.RefObject<HTMLAudioElement> }) => {
+  audioElement,
+}: {
+  audioElement: React.RefObject<HTMLAudioElement>;
+}) => {
+  const [playing, setPlaying] = useState(true);
 
-	const [playing, setPlaying] = useState(true)
+  const { playerSound } = usePlayer();
 
-	const { playerSound } = usePlayer()
+  const pause = useDebouncedCallback(
+    () => {
+      setPlaying(false);
+    },
+    100,
+    {
+      maxWait: 100,
+    }
+  );
 
-	useEffect(() => {
+  const play = useDebouncedCallback(
+    () => {
+      setPlaying(true);
+    },
+    100,
+    {
+      maxWait: 100,
+    }
+  );
 
-		audioElement.current?.addEventListener('pause', () => setPlaying(false))
-		audioElement.current?.addEventListener('play', () => setPlaying(true))
+  useEffect(() => {
+    audioElement.current?.addEventListener("pause", pause);
+    audioElement.current?.addEventListener("play", play);
 
-		return () => {
-			audioElement.current?.removeEventListener('pause', () => setPlaying(false))
-			audioElement.current?.removeEventListener('play', () => setPlaying(true))
-		}
-	}, [audioElement])
+    return () => {
+      audioElement.current?.removeEventListener("pause", pause);
+      audioElement.current?.removeEventListener("play", play);
+    };
+  }, [audioElement]);
 
-	useEffect(() => {
+  useEffect(() => {
+    if (playerSound && playerSound.current) {
+      playing ? playerSound.current.play() : playerSound.current.pause();
+    }
+  }, [playing]);
 
-		if (playerSound && playerSound.current) {
-			playing ? playerSound.current.play() : playerSound.current.pause() 
-		}
+  return playing ? (
+    <BsFillPauseFill
+      color="#f1fa8c"
+      size={26}
+      onClick={pause}
+      className="iconPlay"
+    />
+  ) : (
+    <BsFillPlayFill
+      color="#f1fa8c"
+      size={26}
+      onClick={play}
+      className="iconPlay"
+    />
+  );
+};
 
-	}, [playing])
-
-
-	return playing ? (
-		<BsFillPauseFill
-			color="#f1fa8c"
-			size={26}
-			onClick={() => setPlaying((currentPlaying) => !currentPlaying)}
-			className="iconPlay"
-		/>
-	) : (
-		<BsFillPlayFill
-			color="#f1fa8c"
-			size={26}
-			onClick={() => setPlaying((currentPlaying) => !currentPlaying)}
-			className="iconPlay"
-		/>
-	)
-
-}
-
-export default memo(ControlPause)
+export default memo(ControlPause);

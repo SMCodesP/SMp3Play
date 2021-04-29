@@ -1,15 +1,7 @@
-import React, { useState, useEffect, createRef } from "react";
+import React, { useEffect, createRef, useState } from "react";
 import ProgressiveImage from "react-progressive-graceful-image";
-import { BsFillPlayFill, BsFillPauseFill } from "react-icons/bs";
-import {
-  ImVolumeHigh,
-  ImVolumeMedium,
-  ImVolumeLow,
-  ImVolumeMute2,
-} from "react-icons/im";
+import { ImVolumeHigh } from "react-icons/im";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-
-const { ipcRenderer } = window.require("electron");
 
 import { Video } from "../../interfaces/Video";
 import "./style.css";
@@ -18,7 +10,8 @@ import secondstoMinutes from "../../utils/secondsToMinutes";
 import ControlPause from "./ControlPause";
 import ControlSpeed from "./ControlSpeed";
 import { usePlaylists } from "../../contexts/playlists";
-import { usePlayer } from "../../contexts/player";
+
+const { ipcRenderer } = window.require("electron");
 
 const Player = ({
   video,
@@ -39,11 +32,12 @@ const Player = ({
   audioProps: any;
   setPlaying: React.Dispatch<React.SetStateAction<Video | null>>;
 }) => {
+  const [duration, setDuration] = useState(0);
+
   const seekAudio = createRef<HTMLInputElement>();
   const seekVolume = createRef<HTMLInputElement>();
   const currentDuration = createRef<HTMLParagraphElement>();
   const volumeIndication = createRef<HTMLParagraphElement>();
-  const totalDuration = createRef<HTMLParagraphElement>();
 
   const { playingPlaylist, musicIndexPlaying } = usePlaylists();
 
@@ -69,23 +63,6 @@ const Player = ({
     }
   }
 
-  useEffect(() => {
-    if (audioElement.current) {
-      audioElement.current.ontimeupdate = () => timeUpdateProgress();
-    }
-    if (seekAudio.current) {
-      seekAudio.current.addEventListener("input", timeUpdate);
-      seekAudio.current.addEventListener("change", timeUpdate);
-    }
-
-    return () => {
-      if (seekAudio.current) {
-        seekAudio.current?.removeEventListener("input", timeUpdate);
-        seekAudio.current?.removeEventListener("change", timeUpdate);
-      }
-    };
-  }, [seekAudio]);
-
   function volumeUpdateSeek() {
     if (seekVolume.current && volumeIndication.current) {
       localStorage.setItem(
@@ -106,23 +83,6 @@ const Player = ({
     }
   }
 
-  useEffect(() => {
-    if (audioElement.current) {
-      audioElement.current.onvolumechange = () => volumeUpdateSeek();
-    }
-    if (seekVolume.current) {
-      seekVolume.current.addEventListener("input", volumeUpdate);
-      seekVolume.current.addEventListener("change", volumeUpdate);
-    }
-
-    return () => {
-      if (seekVolume.current) {
-        seekVolume.current?.removeEventListener("input", volumeUpdate);
-        seekVolume.current?.removeEventListener("change", volumeUpdate);
-      }
-    };
-  }, [seekVolume]);
-
   function resetPlayer() {
     if (
       playingPlaylist &&
@@ -131,57 +91,49 @@ const Player = ({
       musicIndexPlaying !== undefined &&
       playingPlaylist.musics[musicIndexPlaying + 1]
     ) {
-      console.log("resetPlayer playlist");
       setPlaying(null);
     } else {
-      console.log("resetPlayer music");
       setPlaying(null);
     }
-    // setPlaying(true)
   }
+
+  const startAudio = () => {
+    ipcRenderer.send("notification", {
+      title: "Tocando uma nova música!",
+      body: `A música "${video?.title}" está sendo tocada.`,
+    });
+
+    setDuration(audioElement.current?.duration || 0);
+
+    if (audioElement.current)
+      audioElement.current.volume =
+        Number(localStorage.getItem("volume") || "100") / 100;
+
+    if (seekAudio.current) {
+      seekAudio.current.value = "0";
+      seekAudio.current.step = "0";
+    }
+  };
 
   useEffect(() => {
     if (audioElement.current && seekAudio.current && seekVolume.current) {
-      audioElement.current.addEventListener("ended", resetPlayer);
-
       seekVolume.current.value = localStorage.getItem("volume") || "100";
-
-      audioElement.current.onloadeddata = () => {
-        ipcRenderer.send("notification", {
-          title: "Tocando uma nova música!",
-          body: `A música "${video?.title}" está sendo tocada.`,
-        });
-
-        if (totalDuration.current) {
-          totalDuration.current.innerText = secondstoMinutes(
-            audioElement.current?.duration || 0
-          );
-        }
-
-        if (audioElement.current)
-          audioElement.current.volume =
-            Number(localStorage.getItem("volume") || "100") / 100;
-
-        if (seekAudio.current) {
-          seekAudio.current.value = "0";
-          seekAudio.current.step = "0";
-          seekAudio.current.max =
-            String(Math.floor(audioElement.current?.duration || 0) * 100) ||
-            "1";
-        }
-      };
     }
-
-    return () => {
-      audioElement.current?.removeEventListener("ended", resetPlayer);
-    };
   }, [audioElement]);
 
   return (
     <>
       <SkeletonTheme color="#282a36" highlightColor="#44475a">
         {!loading && (
-          <audio ref={audioElement} autoPlay {...props.audioProps}></audio>
+          <audio
+            ref={audioElement}
+            onLoadedData={startAudio}
+            onVolumeChange={volumeUpdateSeek}
+            onTimeUpdate={timeUpdateProgress}
+            onEnded={resetPlayer}
+            autoPlay
+            {...props.audioProps}
+          ></audio>
         )}
         <div className="control" ref={reference}>
           {loading ? (
@@ -196,7 +148,7 @@ const Player = ({
             </div>
           ) : (
             <ProgressiveImage
-              src={video?.image || ''}
+              src={video?.image || ""}
               placeholder={`https://i.ytimg.com/vi/${video?.videoId}/default.jpg`}
             >
               {(src: string, loadingImage: boolean) => (
@@ -266,20 +218,24 @@ const Player = ({
                     name="progress"
                     id="progress"
                     min="0"
-                    max={audioElement.current?.duration}
+                    max={duration * 100}
                     step="1"
                     className="progressBar"
+                    onChange={timeUpdate}
                   />
                 )}
               </div>
               <p
-                ref={totalDuration}
                 style={{
                   alignSelf: "center",
                   fontSize: "14px",
                 }}
               >
-                {loading ? <Skeleton width={42} height={15} /> : "00:00"}
+                {loading ? (
+                  <Skeleton width={42} height={15} />
+                ) : (
+                  secondstoMinutes(duration)
+                )}
               </p>
             </div>
           </div>
@@ -295,6 +251,7 @@ const Player = ({
                 <div className="volumeControl">
                   <input
                     ref={seekVolume}
+                    onChange={volumeUpdate}
                     min="0"
                     max="100"
                     step="1"

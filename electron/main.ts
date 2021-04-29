@@ -1,3 +1,5 @@
+import "v8-compile-cache";
+
 import { app, BrowserWindow, ipcMain, protocol, Notification } from "electron";
 import * as path from "path";
 import * as url from "url";
