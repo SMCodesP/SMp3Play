@@ -50,6 +50,12 @@
   transition: 0.2s filter;
 }
 
+.itemDivision li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .itemDivision:hover {
   filter: brightness(75%);
 }
