@@ -1,7 +1,7 @@
 {
   "name": "SMp3Play",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple music player mp3 ytdl application.",
   "main": "./dist/main.js",
   "scripts": {
     "dev:electron": "NODE_ENV=development webpack --display-modules --config webpack.electron.config.js --mode development && electron .",
