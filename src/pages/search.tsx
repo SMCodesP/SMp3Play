@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
-import { ImSearch } from "react-icons/im";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -9,8 +8,16 @@ import VerticalMenu from "../components/VerticalMenu";
 import VideoComponent from "../components/Video";
 import { Video } from "../interfaces/Video";
 
-import "../styles/pages/search.css";
 import { usePlayer } from "../contexts/player";
+
+import {
+  Container,
+  ContainerInput,
+  ContainerVideos,
+  SearchIcon,
+  SearchInput,
+} from "../styles/pages/search";
+import { ThemeContext } from "styled-components";
 
 const Search = () => {
   const [searchText, setSearchText] = useState("");
@@ -18,6 +25,7 @@ const Search = () => {
   const [videos, setVideos] = useState<Video[]>([]);
 
   const { playSound } = usePlayer();
+  const theme = useContext(ThemeContext);
 
   const searchVideos = useDebouncedCallback(() => {
     if (searchText.length === 0) return setVideos([]);
@@ -46,25 +54,25 @@ const Search = () => {
 
   return (
     <ContainerPage>
-      <VerticalMenu />
+      <VerticalMenu selected="search" />
 
-      <div className="container">
-        <form className="containerInput" onSubmit={onFormSubmit}>
-          <input
+      <Container>
+        <ContainerInput onSubmit={onFormSubmit}>
+          <SearchInput
             name="search"
             type="text"
             placeholder="Pesquisa uma música aqui."
-            className="searchInput"
             value={searchText}
             onChange={(e) => {
               setSearchText(e.target.value);
               searchVideos();
             }}
           />
+          <hr className="line" />
           <div onClick={searchVideos}>
-            <ImSearch size={18} color="#ff79c6" className="searchIcon" />
+            <SearchIcon size={18} color={theme.pink} />
           </div>
-        </form>
+        </ContainerInput>
 
         {loading ? (
           <Player
@@ -78,7 +86,7 @@ const Search = () => {
             <h1>Pesquise uma música para ouvir</h1>
           </center>
         ) : (
-          <div className="containerVideos">
+          <ContainerVideos>
             {videos.map((video) => (
               <VideoComponent
                 key={video.videoId}
@@ -86,9 +94,9 @@ const Search = () => {
                 playSound={playSound || function (video: Video) {}}
               />
             ))}
-          </div>
+          </ContainerVideos>
         )}
-      </div>
+      </Container>
     </ContainerPage>
   );
 };

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, createRef, memo } from "react";
 
+import { ControlVelocity } from "../styles";
+
 const ControlSpeed = ({
   audioElement,
 }: {
@@ -32,9 +34,9 @@ const ControlSpeed = ({
   }, [speed]);
 
   return (
-    <p className="controlVelocity" ref={speedIndication} onClick={toggleSpeed}>
+    <ControlVelocity ref={speedIndication} onClick={toggleSpeed}>
       1.0x
-    </p>
+    </ControlVelocity>
   );
 };
 

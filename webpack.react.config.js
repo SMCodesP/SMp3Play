@@ -1,8 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ExtractCssChunks = require("extract-css-chunks-webpack-plugin");
 
-const rootPath = path.resolve(__dirname)
+const rootPath = path.resolve(__dirname);
 
 module.exports = {
   resolve: {
@@ -22,17 +21,9 @@ module.exports = {
         },
       },
       {
-        test: /\.css$/,
-        use: [
-          ExtractCssChunks.loader,
-          'css-loader',
-          'postcss-loader'
-        ],
-      },
-      {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-        loader: 'url-loader'
-      }
+        loader: "url-loader",
+      },
     ],
   },
   devServer: {
@@ -46,9 +37,11 @@ module.exports = {
   output: {
     path: path.resolve(rootPath, "dist/renderer"),
     filename: "js/[name].js",
-    publicPath: './'
+    publicPath: "./",
   },
-  plugins: [new HtmlWebpackPlugin({
-    template: path.resolve(rootPath, 'index.html')
-  }), new ExtractCssChunks()],
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(rootPath, "index.html"),
+    }),
+  ],
 };

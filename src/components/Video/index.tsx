@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import ProgressiveImage from "react-progressive-graceful-image";
 
@@ -18,7 +18,8 @@ import { Video } from "../../interfaces/Video";
 
 import { usePlaylists } from "../../contexts/playlists";
 
-import "./style.css";
+import { ContainerVideo, TitleVideo, AuthorName } from "./styles";
+import { ThemeContext } from "styled-components";
 
 interface MenuItem {
   key: string;
@@ -47,6 +48,9 @@ const VideoComponent = ({
   video: Video;
   playSound(video: Video): void;
 }) => {
+  const theme = useContext(ThemeContext);
+  const { playlists, addVideoInPlaylist, stop } = usePlaylists();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [optionsActive, setOptionsActive] = useState(false);
   const [menuItems, setMenuItems] = useState<Array<MenuItem>>([
@@ -60,10 +64,6 @@ const VideoComponent = ({
       },
     },
   ]);
-
-  const { playlists, addVideoInPlaylist, stop } = usePlaylists();
-
-  const teste: Array<MenuItem> = [];
 
   useEffect(() => {
     if (playlists) {
@@ -92,7 +92,7 @@ const VideoComponent = ({
         },
         {
           key: "group-1",
-          caption: "Add to playlist",
+          caption: "Adicionar à playlist",
           subMenuItems: playlistsMenuItems,
         },
       ]);
@@ -117,13 +117,20 @@ const VideoComponent = ({
           width: "100%",
           justifyContent: "center",
           textAlign: "center",
-          padding: "5px",
-          background: "var(--primaryBackground)",
-          color: "var(--fifthText)",
+          padding: "5px 10px",
+          background: theme.background,
+          color: theme.pink,
           filter: "brightness(90%)",
         }}
       >
-        {menuItem.caption}
+        <p
+          style={{
+            margin: "3px 0 10px 0",
+            fontWeight: "bold",
+          }}
+        >
+          {menuItem.caption}
+        </p>
         <Paper>
           <MenuList>
             {menuItem.subMenuItems.map((subMenuItem) =>
@@ -152,8 +159,8 @@ const VideoComponent = ({
   }
 
   return (
-    <div className="containerVideo" key={video.videoId}>
-      <p className="titleVideo">{video.title}</p>
+    <ContainerVideo key={video.videoId}>
+      <TitleVideo>{video.title}</TitleVideo>
       <p
         style={{
           fontSize: 14,
@@ -166,7 +173,7 @@ const VideoComponent = ({
           maximumFractionDigits: 1,
           notation: "compact",
           compactDisplay: "short",
-        }).format(video.views)}
+        } as any).format(video.views)}
       </p>
       <ProgressiveImage
         src={video.image}
@@ -192,16 +199,14 @@ const VideoComponent = ({
       >
         <FaRegPlayCircle
           size={22}
-          color="#ff79c6"
+          color={theme.pink}
           className="iconUsage"
           onClick={() => {
-            if (playSound !== undefined && video !== undefined) {
-              stop();
-              playSound(video);
-            }
+            stop();
+            playSound(video);
           }}
         />
-        <p className="authorName">{video.author.name}</p>
+        <AuthorName>{video.author.name}</AuthorName>
 
         <IconButton
           aria-label="more"
@@ -209,7 +214,7 @@ const VideoComponent = ({
           aria-haspopup="true"
           onClick={handleClick}
         >
-          <MoreVertIcon style={{ color: "#ff79c6" }} />
+          <MoreVertIcon style={{ color: theme.pink }} />
         </IconButton>
       </div>
       <Menu
@@ -222,7 +227,7 @@ const VideoComponent = ({
       >
         {menuItems.map((menuItem) => renderMenuItem(menuItem))}
       </Menu>
-    </div>
+    </ContainerVideo>
   );
 };
 

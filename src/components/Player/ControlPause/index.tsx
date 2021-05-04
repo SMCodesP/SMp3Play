@@ -1,9 +1,12 @@
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, useEffect, memo, useContext } from "react";
 
 import { BsFillPlayFill, BsFillPauseFill } from "react-icons/bs";
+import { ThemeContext } from "styled-components";
 import { useDebouncedCallback } from "use-debounce";
 
 import { usePlayer } from "../../../contexts/player";
+
+import { IconPlay } from "../styles";
 
 const ControlPause = ({
   audioElement,
@@ -12,6 +15,7 @@ const ControlPause = ({
 }) => {
   const [playing, setPlaying] = useState(true);
 
+  const theme = useContext(ThemeContext);
   const { playerSound } = usePlayer();
 
   const pause = useDebouncedCallback(
@@ -51,19 +55,13 @@ const ControlPause = ({
   }, [playing]);
 
   return playing ? (
-    <BsFillPauseFill
-      color="#f1fa8c"
-      size={26}
-      onClick={pause}
-      className="iconPlay"
-    />
+    <IconPlay>
+      <BsFillPauseFill color={theme.pink} size={26} onClick={pause} />
+    </IconPlay>
   ) : (
-    <BsFillPlayFill
-      color="#f1fa8c"
-      size={26}
-      onClick={play}
-      className="iconPlay"
-    />
+    <IconPlay>
+      <BsFillPlayFill color={theme.pink} size={26} onClick={play} />
+    </IconPlay>
   );
 };
 

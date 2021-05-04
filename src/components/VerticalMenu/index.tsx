@@ -1,35 +1,42 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import { FaHome } from "react-icons/fa";
 import { ImSearch, ImFolderDownload } from "react-icons/im";
 import { RiPlayListFill } from "react-icons/ri";
+import { ThemeContext } from "styled-components";
 
-import "./style.css";
+import { Menu, Link, ListItens, ItemList, Separator } from "./styles";
 
-const VerticalMenu = () => {
+const VerticalMenu: React.FC<{
+  selected: string;
+}> = ({ selected }) => {
+  const theme = useContext(ThemeContext);
+
+  console.log("selected: " + selected);
+
   return (
-    <div className="menu">
-      <ul className="listItens">
-        <a href="#/smp3/">
-          <li className="itemList">
-            <FaHome size={28} color="#ff79c6" />
-          </li>
-        </a>
+    <Menu>
+      <ListItens>
+        <Link href="#/smp3/" actived={selected === "home"}>
+          <ItemList>
+            <FaHome size={26} color={theme.pink} />
+          </ItemList>
+        </Link>
 
-        <hr className="separator" />
+        <Separator />
 
-        <a href="#/smp3/search" className="itemDivision">
-          <li>
-            <ImSearch size={18} color="#f1fa8c" />
-          </li>
-        </a>
-        <a href="#/smp3/playlists" className="itemDivision">
-          <li>
-            <RiPlayListFill size={18} color="#957FEF" />
-          </li>
-        </a>
-      </ul>
-    </div>
+        <Link href="#/smp3/search" actived={selected === "search"}>
+          <ItemList>
+            <ImSearch size={20} color={theme.yellow} />
+          </ItemList>
+        </Link>
+        <Link href="#/smp3/playlists" actived={selected === "playlists"}>
+          <ItemList>
+            <RiPlayListFill size={20} color={theme.purple} />
+          </ItemList>
+        </Link>
+      </ListItens>
+    </Menu>
   );
 };
 

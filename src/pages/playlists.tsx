@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createRef } from "react";
+import React, { useEffect, useState, createRef, useContext } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 import { ImSearch } from "react-icons/im";
@@ -13,7 +13,17 @@ import VerticalMenu from "../components/VerticalMenu";
 
 import { usePlaylists } from "../contexts/playlists";
 
-import "../styles/pages/playlists.css";
+import {
+  Container,
+  ContainerInput,
+  ContainerPlaylists,
+  InputNewPlaylist,
+  ModalInputNewPlaylist,
+  PlaylistAdd,
+  Search,
+  SearchInput,
+} from "../styles/pages/playlists";
+import { ThemeContext } from "styled-components";
 
 const Playlists = () => {
   const [searchText, setSearchText] = useState("");
@@ -22,6 +32,7 @@ const Playlists = () => {
   const [openModal, setOpenModal] = useState(false);
 
   const { playlists, createPlaylist } = usePlaylists();
+  const theme = useContext(ThemeContext);
 
   const inputNewPlaylist = createRef<HTMLInputElement>();
 
@@ -52,15 +63,15 @@ const Playlists = () => {
     setOpenModal(false);
   }
 
-  const searchHandleSubmit = (event) => {
+  const searchHandleSubmit = (event: any) => {
     event.preventDefault();
   };
 
   return (
     <ContainerPage>
-      <VerticalMenu />
+      <VerticalMenu selected="playlists" />
 
-      <div className="container">
+      <Container>
         <br />
         <h1
           style={{
@@ -70,17 +81,17 @@ const Playlists = () => {
           Playlists
         </h1>
 
-        <form className="containerInput" onSubmit={searchHandleSubmit}>
-          <input
+        <ContainerInput onSubmit={searchHandleSubmit}>
+          <SearchInput
             name="search"
             type="text"
             placeholder="Pesquise uma playlist aqui."
-            className="searchInput"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <ImSearch size={18} color="#ff79c6" className="searchIcon" />
-        </form>
+          <hr className="line" />
+          <Search size={18} color={theme.pink} />
+        </ContainerInput>
 
         {loading ? (
           <Player
@@ -90,8 +101,8 @@ const Playlists = () => {
             style={{ height: "450px", width: "450px" }}
           ></Player>
         ) : (
-          <div className="containerPlaylists">
-            <div className="playlistAdd" onClick={() => setOpenModal(true)}>
+          <ContainerPlaylists>
+            <PlaylistAdd onClick={() => setOpenModal(true)}>
               <h1
                 style={{
                   textAlign: "center",
@@ -101,7 +112,7 @@ const Playlists = () => {
               >
                 +
               </h1>
-            </div>
+            </PlaylistAdd>
             {playlists &&
               playlists
                 .filter((playlist) =>
@@ -110,10 +121,10 @@ const Playlists = () => {
                 .map((playlist) => (
                   <PlaylistComponent playlist={playlist} key={playlist.id} />
                 ))}
-          </div>
+          </ContainerPlaylists>
         )}
-      </div>
-      <Modal
+      </Container>
+      <ModalInputNewPlaylist
         open={openModal}
         onClose={() => setOpenModal(false)}
         className="modalInputNewPlaylist"
@@ -127,17 +138,16 @@ const Playlists = () => {
       >
         <Fade in={openModal}>
           <form onSubmit={handleSubmitNewPlaylist}>
-            <input
+            <InputNewPlaylist
               ref={inputNewPlaylist}
               type="text"
               placeholder="Digite o nome da nova playlist."
-              className="inputNewPlaylist"
               value={newPlaylist}
               onChange={(e) => setNewPlaylist(e.target.value)}
             />
           </form>
         </Fade>
-      </Modal>
+      </ModalInputNewPlaylist>
     </ContainerPage>
   );
 };

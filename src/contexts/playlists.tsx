@@ -7,22 +7,25 @@ import { Playlist } from "../interfaces/Playlist";
 
 import { usePlayer } from "./player";
 
-export const PlaylistsContext = React.createContext<
-  Partial<{
-    playlists: Playlist[];
-    addVideoInPlaylist(id: string, video: Video): void;
-    createPlaylist(playlist: Playlist): void;
-    next(): void;
-    play(playlist: Playlist, start: number): void;
-    setTitlePlaylist(id: string, newTitle: string): void;
-    deletePlaylist(id: string): void;
-    updatePlaylist(id: string, newPlaylist: Playlist): void;
-    removeMusicPlaylist(id: string, index: number): void;
-    stop(): void;
-    musicIndexPlaying: number | null;
-    playingPlaylist: Playlist | null;
-  }>
->({});
+interface PlaylistsProps {
+  playlists: Playlist[];
+  addVideoInPlaylist(id: string, video: Video): void;
+  createPlaylist(playlist: Playlist): void;
+  next(): void;
+  previous(): void;
+  play(playlist: Playlist, start: number): void;
+  setTitlePlaylist(id: string, newTitle: string): void;
+  deletePlaylist(id: string): void;
+  updatePlaylist(id: string, newPlaylist: Playlist): void;
+  removeMusicPlaylist(id: string, index: number): void;
+  stop(): void;
+  musicIndexPlaying: number | null;
+  playingPlaylist: Playlist | null;
+}
+
+export const PlaylistsContext = React.createContext<PlaylistsProps>(
+  {} as PlaylistsProps
+);
 
 const PlaylistsProvider: React.FC = ({ children }) => {
   const [playlists, setPlaylists] = useState<Playlist[]>(
@@ -146,6 +149,23 @@ const PlaylistsProvider: React.FC = ({ children }) => {
     }
   }
 
+  function previous() {
+    if (
+      playingPlaylist &&
+      playingPlaylist.musics &&
+      musicIndexPlaying !== null
+    ) {
+      const musicPlay = playingPlaylist.musics[musicIndexPlaying - 1];
+
+      console.log(musicPlay);
+
+      if (musicPlay && playSound) {
+        setMusicIndexPlaying(musicIndexPlaying - 1);
+        playSound(musicPlay);
+      }
+    }
+  }
+
   function next() {
     if (
       playingPlaylist &&
@@ -192,6 +212,7 @@ const PlaylistsProvider: React.FC = ({ children }) => {
         musicIndexPlaying,
         playingPlaylist,
         next,
+        previous,
         play,
         stop,
         setTitlePlaylist,
@@ -205,7 +226,7 @@ const PlaylistsProvider: React.FC = ({ children }) => {
   );
 };
 
-export function usePlaylists() {
+export function usePlaylists(): PlaylistsProps {
   const context = React.useContext(PlaylistsContext);
 
   return context;
