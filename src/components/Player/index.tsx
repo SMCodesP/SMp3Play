@@ -265,7 +265,7 @@ const Player = ({
                   </VolumeIndication>
                 </VolumeControl>
               </VolumeContainer>
-              <ImVolumeHigh color="#bd93f9" size={26} />
+              <ImVolumeHigh color={theme.purple} size={26} />
             </ContainerInformation>
           )}
           {!loading && <ControlSpeed audioElement={audioElement} />}
