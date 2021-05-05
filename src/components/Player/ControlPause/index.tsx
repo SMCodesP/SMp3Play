@@ -10,11 +10,13 @@ import { IconPlay } from "../styles";
 
 const ControlPause = ({
   audioElement,
+  setPlaying,
+  playing
 }: {
   audioElement: React.RefObject<HTMLAudioElement>;
+  setPlaying: any
+  playing: any
 }) => {
-  const [playing, setPlaying] = useState(true);
-
   const theme = useContext(ThemeContext);
   const { playerSound } = usePlayer();
 

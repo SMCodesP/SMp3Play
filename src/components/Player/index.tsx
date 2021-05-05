@@ -7,6 +7,7 @@ import { ImVolumeHigh } from "react-icons/im";
 import { MdSkipNext, MdSkipPrevious } from "react-icons/md";
 
 import { ThemeContext } from "styled-components";
+import { useDebouncedCallback } from 'use-debounce';
 
 import { Video } from "../../interfaces/Video";
 import secondstoMinutes from "../../utils/secondsToMinutes";
@@ -55,6 +56,7 @@ const Player = ({
   const theme = useContext(ThemeContext);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [playing, setPlayingState] = useState(true);
   const [volume, setVolume] = useState(
     Number(localStorage.getItem("volume") || "100")
   );
@@ -70,8 +72,25 @@ const Player = ({
     }
   }
 
-  const onAudioProgessUpdate = (e: any) => {
+  const updateRPC = () => {
+    require("electron").remote.getGlobal("globalVars").RichPresence = {
+      state: `de ${video?.author.name}`,
+      details: video?.title,
+      progress,
+      duration: video?.duration.seconds,
+      largeImageKey: "logo",
+      smallImageKey: playing ? "pause" : "play",
+      smallImageText: playing ? "Tocando" : "Pausado",
+      largeImageText: "SMp3Play",
+      instance: true,
+      type: "listening"
+    }
+  };
+
+  const onTimeProgessUpdate = (e: any) => {
+    console.log('on time progress')
     setProgress(e.target.currentTime);
+    updateRPC()
   };
 
   const onSeekProgressUpdate = (e: any) => {
@@ -82,6 +101,16 @@ const Player = ({
   };
 
   function resetPlayer() {
+    require("electron").remote.getGlobal("globalVars").RichPresence = {
+      state: "em SMp3Play",
+      details: "Procurando alguma música...",
+      startTimestamp: Date.now(),
+      largeImageKey: "logo",
+      instance: true,
+      progress: 0,
+      duration: 0
+    };
+    
     if (
       playingPlaylist &&
       playingPlaylist.musics &&
@@ -119,7 +148,7 @@ const Player = ({
             onVolumeChange={(event: any) =>
               setVolume(event.target.volume * 100)
             }
-            onTimeUpdate={onAudioProgessUpdate}
+            onTimeUpdate={onTimeProgessUpdate}
             onEnded={resetPlayer}
             autoPlay
             {...props.audioProps}
@@ -190,7 +219,7 @@ const Player = ({
                     <IconPlay onClick={previous}>
                       <MdSkipPrevious color={theme.pink} size={26} />
                     </IconPlay>
-                    <ControlPause audioElement={audioElement} />
+                    <ControlPause playing={playing} setPlaying={setPlayingState} audioElement={audioElement} />
                     <IconPlay onClick={next}>
                       <MdSkipNext color={theme.pink} size={26} />
                     </IconPlay>
