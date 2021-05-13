@@ -1,6 +1,6 @@
-import { FaRegPlayCircle } from "react-icons/fa";
-import { lighten } from "polished";
-import styled from "styled-components";
+import { FaRegPlayCircle } from 'react-icons/fa';
+import { lighten, opacify } from 'polished';
+import styled from 'styled-components';
 
 export const ListMusics = styled.div`
   list-style: none;
@@ -14,7 +14,11 @@ export const MusicItemPlaylist = styled.div`
   align-items: center;
   margin: 5px 0;
   padding: 15px;
-  background: ${({ theme }) => lighten(0.1, theme.background)};
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => opacify(0.1, lighten(0.2, theme.background))},
+    ${({ theme }) => lighten(0.1, theme.background)} 65%
+  );
   border-radius: 5px;
   cursor: move !important;
   transition: filter 0.2s, box-shadow 0.2s;

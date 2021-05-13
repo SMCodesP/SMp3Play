@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 
-import { Video } from "../interfaces/Video";
-import { Playlist } from "../interfaces/Playlist";
+import { Video } from '../interfaces/Video';
+import { Playlist } from '../interfaces/Playlist';
 
-import { usePlayer } from "./player";
+import { usePlayer } from './player';
 
 interface PlaylistsProps {
   playlists: Playlist[];
@@ -24,17 +24,16 @@ interface PlaylistsProps {
 }
 
 export const PlaylistsContext = React.createContext<PlaylistsProps>(
-  {} as PlaylistsProps
+  {} as PlaylistsProps,
 );
 
 const PlaylistsProvider: React.FC = ({ children }) => {
   const [playlists, setPlaylists] = useState<Playlist[]>(
-    JSON.parse(localStorage.getItem("playlists") || "[]")
+    JSON.parse(localStorage.getItem('playlists') || '[]'),
   );
   const [playingPlaylist, setPlayingPlaylist] = useState<Playlist | null>(null);
-  const [musicIndexPlaying, setMusicIndexPlaying] = useState<number | null>(
-    null
-  );
+  const [musicIndexPlaying, setMusicIndexPlaying] =
+    useState<number | null>(null);
 
   const { playerSound, playSound } = usePlayer();
 
@@ -56,7 +55,7 @@ const PlaylistsProvider: React.FC = ({ children }) => {
 
   function removeMusicPlaylist(id: string, index: number) {
     const playlist = playlists.find(
-      (playlistFinding) => playlistFinding.id === id
+      (playlistFinding) => playlistFinding.id === id,
     );
     if (playlist && playlist.musics) {
       playlist.musics.splice(index, 1);
@@ -89,10 +88,10 @@ const PlaylistsProvider: React.FC = ({ children }) => {
     video: Video,
     options?: {
       force?: boolean;
-    }
+    },
   ) {
     const playlist = playlists.find(
-      (playlistFinding) => playlistFinding.id === id
+      (playlistFinding) => playlistFinding.id === id,
     );
 
     if (playlist) {
@@ -102,13 +101,12 @@ const PlaylistsProvider: React.FC = ({ children }) => {
           playlist.musics.some((song) => song.videoId === video.videoId)
         ) {
           Swal.fire({
-            title: "Confirme!",
-            text:
-              "Na playlist seleciona já contém a música, você tem certeza que quer adiciona-la novamente?",
-            icon: "question",
+            title: 'Confirme!',
+            text: 'Na playlist seleciona já contém a música, você tem certeza que quer adiciona-la novamente?',
+            icon: 'question',
             showCancelButton: true,
-            cancelButtonText: "Cancelar",
-            confirmButtonText: "Adicionar",
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Adicionar',
             preConfirm: () => {
               addVideoInPlaylist(id, video, {
                 force: true,
@@ -123,7 +121,7 @@ const PlaylistsProvider: React.FC = ({ children }) => {
       }
 
       const playlistsUpdate = playlists.map((playlistMaping) =>
-        playlistMaping.id === id ? playlist : playlistMaping
+        playlistMaping.id === id ? playlist : playlistMaping,
       );
 
       setPlaylists(playlistsUpdate);
@@ -157,8 +155,6 @@ const PlaylistsProvider: React.FC = ({ children }) => {
     ) {
       const musicPlay = playingPlaylist.musics[musicIndexPlaying - 1];
 
-      console.log(musicPlay);
-
       if (musicPlay && playSound) {
         setMusicIndexPlaying(musicIndexPlaying - 1);
         playSound(musicPlay);
@@ -189,18 +185,18 @@ const PlaylistsProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (playerSound && playerSound.current) {
-      playerSound.current.addEventListener("ended", next);
+      playerSound.current.addEventListener('ended', next);
     }
 
     return () => {
       if (playerSound && playerSound.current) {
-        playerSound.current.removeEventListener("ended", next);
+        playerSound.current.removeEventListener('ended', next);
       }
     };
   }, [playerSound]);
 
   useEffect(() => {
-    localStorage.setItem("playlists", JSON.stringify(playlists));
+    localStorage.setItem('playlists', JSON.stringify(playlists));
   }, [playlists]);
 
   return (

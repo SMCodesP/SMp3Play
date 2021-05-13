@@ -1,22 +1,22 @@
-import React from "react";
+import React from 'react';
 
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import {
   Draggable,
   DraggableProvided,
   Droppable,
   DroppableProvided,
-} from "react-beautiful-dnd";
+} from 'react-beautiful-dnd';
 
-import secondsToDate from "../../utils/secondsToDate";
+import secondsToDate from '../../utils/secondsToDate';
 
-import { Playlist } from "../../interfaces/Playlist";
+import { Playlist } from '../../interfaces/Playlist';
 
-import { usePlaylists } from "../../contexts/playlists";
+import { usePlaylists } from '../../contexts/playlists';
 
-import { ListMusics, MusicItemPlaylist, PlayPlaylistMusic } from "./styles";
+import { ListMusics, MusicItemPlaylist, PlayPlaylistMusic } from './styles';
 
 const initialState = {
   mouseX: null,
@@ -24,10 +24,11 @@ const initialState = {
 };
 
 const Music = ({ music, index, play, playlist }: any) => {
-  const [position, setPosition] = React.useState<{
-    mouseX: null | number;
-    mouseY: null | number;
-  }>(initialState);
+  const [position, setPosition] =
+    React.useState<{
+      mouseX: null | number;
+      mouseY: null | number;
+    }>(initialState);
 
   const { removeMusicPlaylist } = usePlaylists();
 

@@ -1,25 +1,32 @@
-import React, { createRef, useState, useContext } from "react";
+import React, { createRef, useState, useContext, useEffect } from 'react';
 
-import ProgressiveImage from "react-progressive-graceful-image";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import ProgressiveImage from 'react-progressive-graceful-image';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
-import { ImVolumeHigh } from "react-icons/im";
-import { MdSkipNext, MdSkipPrevious } from "react-icons/md";
+import {
+  ImVolumeHigh,
+  ImVolumeMedium,
+  ImVolumeLow,
+  ImVolumeMute,
+  ImVolumeMute2,
+} from 'react-icons/im';
+import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
 
-import { ThemeContext } from "styled-components";
+import { ThemeContext } from 'styled-components';
 
-import { Video } from "../../interfaces/Video";
-import secondstoMinutes from "../../utils/secondsToMinutes";
+import { Video } from '../../interfaces/Video';
+import secondstoMinutes from '../../utils/secondsToMinutes';
 
-import ControlPause from "./ControlPause";
-import ControlSpeed from "./ControlSpeed";
-import { usePlaylists } from "../../contexts/playlists";
+import ControlPause from './ControlPause';
+import ControlSpeed from './ControlSpeed';
+import { usePlaylists } from '../../contexts/playlists';
 
 import {
   Control,
   ContainerThumbnail,
   Thumbnail,
   ColumnControl,
+  TitleContainer,
   Title,
   ProgressBar,
   ContainerInformation,
@@ -29,9 +36,9 @@ import {
   InputVolume,
   IconPlay,
   ContainerControl,
-} from "./styles";
+} from './styles';
 
-const { ipcRenderer } = window.require("electron");
+const { ipcRenderer } = window.require('electron');
 
 const Player = ({
   video,
@@ -56,17 +63,27 @@ const Player = ({
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(
-    Number(localStorage.getItem("volume") || "100")
+    Number(localStorage.getItem('volume') || '100'),
   );
+  const [mute, setMute] = useState(false);
 
   const seekVolume = createRef<HTMLInputElement>();
   const volumeIndication = createRef<HTMLParagraphElement>();
 
   const { playingPlaylist, musicIndexPlaying, next, previous } = usePlaylists();
 
+  useEffect(() => {
+    if (audioElement.current) {
+      (audioElement.current as any).handleMute = handleMute;
+      (audioElement.current as any).next = next;
+      (audioElement.current as any).previous = previous;
+    }
+  }, [audioElement]);
+
   function volumeUpdate(e: any) {
     if (audioElement.current) {
       audioElement.current.volume = e.target.value / 100;
+      localStorage.setItem('volume', String(e.target.value));
     }
   }
 
@@ -96,18 +113,32 @@ const Player = ({
   }
 
   const startAudio = () => {
-    ipcRenderer.send("notification", {
-      title: "Tocando uma nova música!",
+    ipcRenderer.send('notification', {
+      title: 'Tocando uma nova música!',
       body: `A música "${video?.title}" está sendo tocada.`,
     });
 
     setDuration(audioElement.current?.duration || 0);
     setProgress(0);
 
+    console.log(audioElement.current);
+
     if (audioElement.current)
       audioElement.current.volume =
-        Number(localStorage.getItem("volume") || "100") / 100;
+        Number(localStorage.getItem('volume') || '100') / 100;
   };
+
+  const handleMute = () => setMute((oldState) => !oldState);
+
+  const IconVolume = mute
+    ? ImVolumeMute2
+    : volume >= 66
+    ? ImVolumeHigh
+    : volume >= 33
+    ? ImVolumeMedium
+    : volume > 0
+    ? ImVolumeLow
+    : ImVolumeMute;
 
   return (
     <>
@@ -119,6 +150,7 @@ const Player = ({
             onVolumeChange={(event: any) =>
               setVolume(event.target.volume * 100)
             }
+            muted={mute}
             onTimeUpdate={onAudioProgessUpdate}
             onEnded={resetPlayer}
             autoPlay
@@ -132,13 +164,13 @@ const Player = ({
             </ContainerThumbnail>
           ) : (
             <ProgressiveImage
-              src={video?.image || ""}
+              src={video?.image || ''}
               placeholder={`https://i.ytimg.com/vi/${video?.videoId}/default.jpg`}
             >
               {(src: string, loadingImage: boolean) => (
                 <Thumbnail
                   style={{
-                    filter: loadingImage ? "blur(5px)" : "",
+                    filter: loadingImage ? 'blur(5px)' : '',
                   }}
                   src={src}
                   alt={video?.title}
@@ -148,19 +180,21 @@ const Player = ({
           )}
 
           <ColumnControl>
-            <Title>{loading ? <Skeleton /> : video?.title}</Title>
+            <TitleContainer>
+              <Title>{loading ? <Skeleton /> : video?.title}</Title>
+            </TitleContainer>
             <div
               style={{
-                width: "90%",
-                display: "flex",
-                alignSelf: "center",
-                justifyContent: "space-between",
+                width: '90%',
+                display: 'flex',
+                alignSelf: 'center',
+                justifyContent: 'space-between',
               }}
             >
               <p
                 style={{
-                  alignSelf: "center",
-                  fontSize: "14px",
+                  alignSelf: 'center',
+                  fontSize: '14px',
                 }}
               >
                 {loading ? (
@@ -171,12 +205,12 @@ const Player = ({
               </p>
               <div
                 style={{
-                  width: "85%",
-                  position: "relative",
-                  borderRadius: "5px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignSelf: "center",
+                  width: '85%',
+                  position: 'relative',
+                  borderRadius: '5px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignSelf: 'center',
                 }}
               >
                 {loading ? (
@@ -200,7 +234,7 @@ const Player = ({
                   <Skeleton
                     height={8}
                     style={{
-                      margin: "5px 0",
+                      margin: '5px 0',
                     }}
                   />
                 ) : (
@@ -225,8 +259,8 @@ const Player = ({
               </div>
               <p
                 style={{
-                  alignSelf: "center",
-                  fontSize: "14px",
+                  alignSelf: 'center',
+                  fontSize: '14px',
                 }}
               >
                 {loading ? (
@@ -265,7 +299,7 @@ const Player = ({
                   </VolumeIndication>
                 </VolumeControl>
               </VolumeContainer>
-              <ImVolumeHigh color={theme.purple} size={26} />
+              <IconVolume onClick={handleMute} color={theme.purple} size={26} />
             </ContainerInformation>
           )}
           {!loading && <ControlSpeed audioElement={audioElement} />}

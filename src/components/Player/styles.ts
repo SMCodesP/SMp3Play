@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { darken, lighten } from "polished";
+import styled, { keyframes } from 'styled-components';
+import { darken, lighten } from 'polished';
 
 export const Control = styled.div`
   width: 100%;
@@ -16,7 +16,7 @@ export const ContainerThumbnail = styled.div`
   border-radius: 5px;
   cursor: pointer;
   align-self: center;
-  box-shadow: 3px 3px 6px 0 ${({ theme }) => theme.currentLine};
+  box-shadow: 1px 1px 3px 0 ${({ theme }) => theme.currentLine};
 `;
 
 export const Thumbnail = styled.img`
@@ -25,7 +25,7 @@ export const Thumbnail = styled.img`
   border-radius: 5px;
   cursor: pointer;
   align-self: center;
-  box-shadow: 3px 3px 6px 0 ${({ theme }) => theme.currentLine};
+  box-shadow: 1px 1px 3px 0 ${({ theme }) => theme.currentLine};
   transition: 0.2s filter;
 
   &:hover {
@@ -39,11 +39,31 @@ export const ColumnControl = styled.div`
   flex-direction: column;
 `;
 
-export const Title = styled.p`
+const slideLeft = keyframes`
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+`;
+
+export const TitleContainer = styled.div`
+  width: fit-content;
+  max-width: 100%;
   margin-top: calc((95px - 72px) / 2);
-  margin-left: 5px;
+  margin-left: 10px;
+  overflow: hidden;
+  border-radius: 50%;
+  border-radius: 25px;
+`;
+
+export const Title = styled.p`
+  width: fit-content;
   font-weight: bold;
   font-size: 14px;
+  white-space: nowrap;
+  animation: ${slideLeft} 7.5s linear infinite;
 `;
 
 export const IconPlay = styled.div`
@@ -63,7 +83,7 @@ export const IconPlay = styled.div`
 export const ProgressBar = styled.input`
   width: 100%;
   appearance: none;
-  height: 3px;
+  height: 4px;
   transition: height 0.2s;
   border-radius: 5px;
   margin-top: 15px;
@@ -87,8 +107,8 @@ export const ProgressBar = styled.input`
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     border: none;
-    width: 12px;
-    height: 12px;
+    width: 0;
+    height: 0;
     border-radius: 50%;
     background: ${({ theme }) => theme.pink};
     cursor: pointer;
@@ -97,10 +117,18 @@ export const ProgressBar = styled.input`
     border: 0 !important;
     box-shadow: none !important;
     box-sizing: none;
+    opacity: 0;
+    transition: opacity 0.2s, width 0.4s, height 0.4s;
   }
 
   &:hover {
     height: 5px;
+  }
+
+  &:hover::-webkit-slider-thumb {
+    width: 10px;
+    height: 10px;
+    opacity: 1;
   }
 `;
 
@@ -123,6 +151,15 @@ export const ContainerInformation = styled.div`
 
   &:hover ${VolumeContainer} {
     display: block !important;
+  }
+
+  & svg {
+    cursor: pointer;
+    transition: filter 0.4s;
+  }
+
+  & svg:hover {
+    filter: brightness(75%);
   }
 `;
 
@@ -167,7 +204,6 @@ export const InputVolume = styled.input`
   width: 120px;
   appearance: none;
   height: 5px;
-  transition: height 0.2s;
   border-radius: 5px;
   margin: 5px 0;
   cursor: pointer;
@@ -190,8 +226,9 @@ export const InputVolume = styled.input`
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     border: none;
-    width: 14px;
-    height: 14px;
+    opacity: 0;
+    width: 0;
+    height: 0;
     border-radius: 50%;
     background: ${({ theme }) => darken(0.1, theme.pink)};
     cursor: pointer;
@@ -200,10 +237,13 @@ export const InputVolume = styled.input`
     border: 0 !important;
     box-shadow: none !important;
     box-sizing: none;
+    transition: opacity 0.2s, width 0.4s, height 0.4s;
   }
 
-  &:hover {
-    height: 6px;
+  &:hover::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+    opacity: 1;
   }
 `;
 
