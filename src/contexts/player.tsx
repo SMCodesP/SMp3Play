@@ -80,7 +80,7 @@ const PlayerProvider: React.FC = ({ children }) => {
       ) => {
         setPlaying({
           ...arg.video,
-          src: `media://${arg.path}`,
+          src: arg.path,
         });
         setLoading(false);
       },

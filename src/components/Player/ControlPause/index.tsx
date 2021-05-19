@@ -20,7 +20,7 @@ const ControlPause = ({
 
   const pause = useDebouncedCallback(
     () => {
-      setPlaying(false);
+      playerSound!.current!.pause()
     },
     100,
     {
@@ -30,7 +30,7 @@ const ControlPause = ({
 
   const play = useDebouncedCallback(
     () => {
-      setPlaying(true);
+      playerSound!.current!.play()
     },
     100,
     {
@@ -38,22 +38,24 @@ const ControlPause = ({
     }
   );
 
+  const onPlay = () => {
+    setPlaying(true)
+  }
+
+  const onPause = () => {
+    setPlaying(false)
+  }
+
   useEffect(() => {
-    audioElement.current?.addEventListener("pause", pause);
-    audioElement.current?.addEventListener("play", play);
+    audioElement.current?.addEventListener("pause", onPause);
+    audioElement.current?.addEventListener("play", onPlay);
 
     return () => {
-      audioElement.current?.removeEventListener("pause", pause);
-      audioElement.current?.removeEventListener("play", play);
+      audioElement.current?.removeEventListener("pause", onPause);
+      audioElement.current?.removeEventListener("play", onPlay);
     };
   }, [audioElement]);
-
-  useEffect(() => {
-    if (playerSound && playerSound.current) {
-      playing ? playerSound.current.play() : playerSound.current.pause();
-    }
-  }, [playing]);
-
+  
   return playing ? (
     <IconPlay>
       <BsFillPauseFill color={theme.pink} size={26} onClick={pause} />

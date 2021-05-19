@@ -37,6 +37,8 @@ export const ColumnControl = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
+  padding-bottom: 15px;
+  justify-content: space-between;
 `;
 
 const slideLeft = keyframes`

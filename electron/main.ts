@@ -93,7 +93,7 @@ ipcMain.on("video", async (_event, arg: Video) => {
 
   if (fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
     mainWindow?.webContents.send("videomp3", {
-      path: `${dir}/${arg.videoId}.mp3`,
+      path: `media://${dir}/${arg.videoId}.mp3`,
       video: arg,
     });
     return;
