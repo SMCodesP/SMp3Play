@@ -1,33 +1,29 @@
-import React from "react";
-import ReactDom from "react-dom";
+import React from 'react';
+import ReactDom from 'react-dom';
 
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider } from 'styled-components';
 
-import Routes from "./routes";
+import Routes from './routes';
 
-import PlayerProvider from "./contexts/player";
-
-import { GlobalStyle } from "./styles/global";
-import themes from "./themes";
+import { GlobalStyle } from './styles/global';
+import themes from './themes';
 
 declare class FontFace {
   constructor(name: string, path: string);
 }
 
-if (document.fonts) {
-  const fontFace = new FontFace("Roboto", "./fonts/Roboto-Regular.ttf");
-  document.fonts.add(fontFace);
+if ((document as any).fonts) {
+  const fontFace = new FontFace('Roboto', './fonts/Roboto-Regular.ttf');
+  (document as any).fonts.add(fontFace);
 }
 
 const App = () => {
   return (
-    <ThemeProvider theme={themes["dark"]}>
-      <PlayerProvider>
-        <Routes />
-      </PlayerProvider>
+    <ThemeProvider theme={themes['dark']}>
+      <Routes />
       <GlobalStyle />
     </ThemeProvider>
   );
 };
 
-ReactDom.render(<App />, document.getElementById("root"));
+ReactDom.render(<App />, document.getElementById('root'));
