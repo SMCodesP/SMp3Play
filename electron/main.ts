@@ -1,4 +1,4 @@
-import "v8-compile-cache";
+require("v8-compile-cache");
 
 import { app, BrowserWindow, ipcMain, protocol, Notification } from "electron";
 import * as path from "path";
@@ -56,12 +56,13 @@ ipcMain.on(
 );
 
 const downloadMusic = (music: Video, pathFile: string): Promise<string> =>
-  new Promise((res, rej) => {
+  new Promise((res, _rej) => {
     if (fs.existsSync(pathFile)) return res(pathFile);
 
     const stream = ytdl(music.url, {
-      quality: "highestaudio",
       filter: "audioonly",
+      quality: 'highestaudio',
+
     }).pipe(fs.createWriteStream(pathFile));
 
     stream.on("close", () => {
@@ -76,7 +77,7 @@ ipcMain.on("playlistDownload", (_event, arg: Playlist) => {
     arg.musics?.map(async (music) => {
       const pathFile = `${dir}/${music.videoId}.mp3`;
 
-      return await downloadMusic(music, pathFile);
+      return downloadMusic(music, pathFile);
     }) || [];
 
   Promise.all(musicsDownload).then((musics) => {
@@ -85,27 +86,36 @@ ipcMain.on("playlistDownload", (_event, arg: Playlist) => {
 });
 
 ipcMain.on("video", async (_event, arg: Video) => {
-  const dir = app.getPath("userData") + `/SMp3Play`;
+  try {
+    const dir = app.getPath("userData") + `/SMp3Play`;
 
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-  }
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
 
-  if (fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
+    if (fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
+      mainWindow?.webContents.send("videomp3", {
+        path: `media://${dir}/${arg.videoId}.mp3`,
+        video: arg,
+      });
+      return;
+    }
+
+    console.log(arg.url)
+
+    const info = await ytdl.getInfo(arg.url);
+    const format = ytdl.chooseFormat(info.formats, {
+      filter: "audioonly",
+      quality: 'highestaudio',
+    });
+
     mainWindow?.webContents.send("videomp3", {
-      path: `media://${dir}/${arg.videoId}.mp3`,
+      path: format.url,
       video: arg,
     });
-    return;
+
+  } catch (error) {
+    console.error(error)
+    console.log(error)
   }
-
-  const info = await ytdl.getInfo(arg.url);
-  const format = ytdl.chooseFormat(info.formats, {
-    filter: "audioonly",
-  });
-
-  mainWindow?.webContents.send("videomp3", {
-    path: format.url,
-    video: arg,
-  });
 });

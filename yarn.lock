@@ -8719,10 +8719,9 @@ yauzl@^2.10.0:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.1.0"
 
-ytdl-core@^4.3.1:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/ytdl-core/-/ytdl-core-4.5.0.tgz#f07733387c548e5c3a5614c93ef55bde666eeaf4"
-  integrity sha512-e8r6skrakWNixsVlNPBMoRM1HrdW1swE97If9nenDUjF65uogYk4DvxIuqlmqRfBWKe+6aIZwqedNxUU9XLYJA==
+"ytdl-core@git+https://github.com/cchen028/node-ytdl-core.git":
+  version "0.0.0-development"
+  resolved "git+https://github.com/cchen028/node-ytdl-core.git#e6139ebf2c3f1e422b8274b4a77f0d1a8903d8b4"
   dependencies:
     m3u8stream "^0.8.3"
     miniget "^4.0.0"

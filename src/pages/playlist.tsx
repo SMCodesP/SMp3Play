@@ -58,9 +58,10 @@ const PlaylistPage = ({
   const theme = useContext(ThemeContext);
   const { play, setTitlePlaylist, updatePlaylist } = usePlaylists();
 
-  function handleTitleEditingForm(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
+  function handleTitleEditingForm(e: any) {
+    if (e) {
+      e.preventDefault();
+    }
     if (setTitlePlaylist) {
       let newTitle = title;
       if (title.length === 0) {
@@ -80,6 +81,7 @@ const PlaylistPage = ({
     if (checked) {
       ipcRenderer.send("playlistDownload", playlist);
     }
+
     setPlaylist((state) => ({
       ...state,
       checkedDownload: checked,

@@ -83,6 +83,7 @@ const Player = ({
   function volumeUpdate(e: any) {
     if (audioElement.current) {
       audioElement.current.volume = e.target.value / 100;
+      setVolume(e.target.value)
       localStorage.setItem('volume', String(e.target.value));
     }
   }
@@ -121,8 +122,6 @@ const Player = ({
     setDuration(audioElement.current?.duration || 0);
     setProgress(0);
 
-    console.log(audioElement.current);
-
     if (audioElement.current)
       audioElement.current.volume =
         Number(localStorage.getItem('volume') || '100') / 100;
@@ -147,9 +146,6 @@ const Player = ({
           <audio
             ref={audioElement}
             onLoadedData={startAudio}
-            onVolumeChange={(event: any) =>
-              setVolume(event.target.volume * 100)
-            }
             muted={mute}
             onTimeUpdate={onAudioProgessUpdate}
             onEnded={resetPlayer}

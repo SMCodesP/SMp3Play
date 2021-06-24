@@ -31,8 +31,6 @@ const PlayerProvider: React.FC = ({ children }) => {
   const audioElement = createRef<HTMLAudioElement>();
   const displayElement = createRef<HTMLDivElement>();
 
-  const playlists = usePlaylists();
-
   const keywordPressed = (event: KeyboardEvent) => {
     const { keyCode } = event;
 
