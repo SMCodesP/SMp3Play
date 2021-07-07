@@ -1,111 +1,57 @@
-import "v8-compile-cache";
+import { app, BrowserWindow, ipcMain } from 'electron'
 
-import { app, BrowserWindow, ipcMain, protocol, Notification } from "electron";
-import * as path from "path";
-import * as url from "url";
-import ytdl from "ytdl-core";
-import fs from "fs";
+let mainWindow: BrowserWindow | null
 
-import { Video } from "../src/interfaces/Video";
-import { Playlist } from "../src/interfaces/Playlist";
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
 
-let mainWindow: Electron.BrowserWindow | null;
+// const assetsPath =
+//   process.env.NODE_ENV === 'production'
+//     ? process.resourcesPath
+//     : app.getAppPath()
 
-function createWindow() {
-  protocol.registerFileProtocol("media", (request, callback) => {
-    const pathname = decodeURI(request.url.replace("media:///", ""));
-    callback(pathname);
-  });
-
+function createWindow () {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    autoHideMenuBar: true,
+    // icon: path.join(assetsPath, 'assets', 'icon.png'),
+    width: 1100,
+    height: 700,
+    backgroundColor: '#191622',
     webPreferences: {
-      nodeIntegration: true,
-      webSecurity: false,
-    },
-  });
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
+    }
+  })
 
-  if (process.env.NODE_ENV === "production") {
-    mainWindow.loadURL(
-      url.format({
-        pathname: path.join(__dirname, "renderer/index.html"),
-        protocol: "file:",
-        slashes: true,
-      })
-    );
-  } else {
-    mainWindow.loadURL(`http://localhost:4000`);
-    mainWindow.webContents.openDevTools();
-  }
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
-  mainWindow.on("closed", () => {
-    mainWindow = null;
-  });
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
 }
 
-app.on("ready", createWindow);
-app.allowRendererProcessReuse = true;
+async function registerListeners () {
+  /**
+   * This comes from bridge integration, check bridge.ts
+   */
+  ipcMain.on('message', (_, message) => {
+    console.log(message)
+  })
+}
 
-ipcMain.on(
-  "notification",
-  (_event, arg: Electron.NotificationConstructorOptions | any) => {
-    new Notification(arg).show();
+app.on('ready', createWindow)
+  .whenReady()
+  .then(registerListeners)
+  .catch(e => console.error(e))
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
   }
-);
+})
 
-const downloadMusic = (music: Video, pathFile: string): Promise<string> =>
-  new Promise((res, rej) => {
-    if (fs.existsSync(pathFile)) return res(pathFile);
-
-    const stream = ytdl(music.url, {
-      quality: "highestaudio",
-      filter: "audioonly",
-    }).pipe(fs.createWriteStream(pathFile));
-
-    stream.on("close", () => {
-      res(pathFile);
-    });
-  });
-
-ipcMain.on("playlistDownload", (_event, arg: Playlist) => {
-  const dir = app.getPath("userData") + `/SMp3Play`;
-
-  const musicsDownload: Promise<string>[] =
-    arg.musics?.map(async (music) => {
-      const pathFile = `${dir}/${music.videoId}.mp3`;
-
-      return await downloadMusic(music, pathFile);
-    }) || [];
-
-  Promise.all(musicsDownload).then((musics) => {
-    mainWindow?.webContents.send("playlistDownloaded", musics);
-  });
-});
-
-ipcMain.on("video", async (_event, arg: Video) => {
-  const dir = app.getPath("userData") + `/SMp3Play`;
-
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow()
   }
-
-  if (fs.existsSync(`${dir}/${arg.videoId}.mp3`)) {
-    mainWindow?.webContents.send("videomp3", {
-      path: `media://${dir}/${arg.videoId}.mp3`,
-      video: arg,
-    });
-    return;
-  }
-
-  const info = await ytdl.getInfo(arg.url);
-  const format = ytdl.chooseFormat(info.formats, {
-    filter: "audioonly",
-  });
-
-  mainWindow?.webContents.send("videomp3", {
-    path: format.url,
-    video: arg,
-  });
-});
+})
