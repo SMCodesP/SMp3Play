@@ -19,7 +19,7 @@ type PlayerType = Partial<{
   playerSound: React.RefObject<HTMLAudioElement>;
   playSound(video: Video): void;
   playing: Video | null;
-  setPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  setPlaying: React.Dispatch<React.SetStateAction<Video | null>>;
 }>;
 
 export const PlayerContext = createContext<PlayerType>({});
@@ -110,6 +110,7 @@ const PlayerProvider: React.FC = ({ children }) => {
         playSound,
         playerSound: audioElement,
         playing,
+        setPlaying,
       }}
     >
       <PlaylistsProvider>

@@ -19,6 +19,10 @@ interface PlaylistsProps {
   updatePlaylist(id: string, newPlaylist: Playlist): void;
   removeMusicPlaylist(id: string, index: number): void;
   stop(): void;
+  toggleRepeating(): void;
+  toggleRandomly(): void;
+  isRepeating: boolean;
+  isRandomly: boolean;
   musicIndexPlaying: number | null;
   playingPlaylist: Playlist | null;
 }
@@ -34,8 +38,15 @@ const PlaylistsProvider: React.FC = ({ children }) => {
   const [playingPlaylist, setPlayingPlaylist] = useState<Playlist | null>(null);
   const [musicIndexPlaying, setMusicIndexPlaying] =
     useState<number | null>(null);
+  const [songsRemaining, setSongsRemaining] = useState<number[]>([]);
+  const [isRepeating, setIsRepeating] = useState<boolean>(
+    localStorage.getItem('repeating') == 'true' || false,
+  );
+  const [isRandomly, setIsRandomly] = useState<boolean>(
+    localStorage.getItem('randomly') == 'true' || false,
+  );
 
-  const { playerSound, playSound } = usePlayer();
+  const { playerSound, playSound, playing, setPlaying } = usePlayer();
 
   function deletePlaylist(id: string) {
     setPlaylists(playlists.filter((playlist) => playlist.id !== id));
@@ -136,6 +147,11 @@ const PlaylistsProvider: React.FC = ({ children }) => {
         setPlayingPlaylist(playlist);
         setMusicIndexPlaying(index);
         playSound(videoStart);
+        if (isRandomly) {
+          setSongsRemaining(
+            playlist.musics.map((_, id) => id).filter((id) => index !== id),
+          );
+        }
       }
     }
   }
@@ -168,19 +184,48 @@ const PlaylistsProvider: React.FC = ({ children }) => {
       playingPlaylist.musics &&
       musicIndexPlaying !== null
     ) {
-      const musicPlay = playingPlaylist.musics[musicIndexPlaying + 1];
+      const indexPlay = isRandomly
+        ? songsRemaining[Math.floor(Math.random() * songsRemaining.length)]
+        : musicIndexPlaying + 1;
+      console.log(indexPlay);
 
-      if (!musicPlay) {
+      if (indexPlay === undefined || !playingPlaylist.musics[indexPlay]) {
+        if (isRepeating) {
+          play(playingPlaylist, 0);
+          return;
+        }
         setMusicIndexPlaying(null);
         setPlayingPlaylist(null);
+        if (setPlaying) {
+          setPlaying(null);
+        }
         return;
       }
 
+      const musicPlay = playingPlaylist.musics[indexPlay];
+
       if (playSound) {
-        setMusicIndexPlaying(musicIndexPlaying + 1);
+        if (isRandomly) {
+          setSongsRemaining((state) => state.filter((id) => id !== indexPlay));
+        }
+        setMusicIndexPlaying(indexPlay);
         playSound(musicPlay);
       }
+    } else if (isRepeating && playing && playSound) {
+      playSound(playing);
+    } else {
+      if (setPlaying) {
+        setPlaying(null);
+      }
     }
+  }
+
+  function toggleRepeating() {
+    setIsRepeating((state) => !state);
+  }
+
+  function toggleRandomly() {
+    setIsRandomly((state) => !state);
   }
 
   useEffect(() => {
@@ -199,6 +244,26 @@ const PlaylistsProvider: React.FC = ({ children }) => {
     localStorage.setItem('playlists', JSON.stringify(playlists));
   }, [playlists]);
 
+  useEffect(() => {
+    localStorage.setItem('repeating', String(isRepeating));
+  }, [isRepeating]);
+
+  useEffect(() => {
+    localStorage.setItem('randomly', String(isRandomly));
+  }, [isRandomly]);
+
+  useEffect(() => {
+    if (isRepeating && playingPlaylist) {
+      if (songsRemaining.length === 0) {
+        setSongsRemaining(
+          playingPlaylist
+            .musics!.map((_, id) => id)
+            .filter((id) => id !== musicIndexPlaying),
+        );
+      }
+    }
+  }, [songsRemaining, isRandomly]);
+
   return (
     <PlaylistsContext.Provider
       value={{
@@ -215,6 +280,10 @@ const PlaylistsProvider: React.FC = ({ children }) => {
         updatePlaylist,
         deletePlaylist,
         removeMusicPlaylist,
+        isRepeating,
+        isRandomly,
+        toggleRepeating,
+        toggleRandomly,
       }}
     >
       {children}

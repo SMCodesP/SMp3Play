@@ -68,13 +68,19 @@ export const Title = styled.p`
   animation: ${slideLeft} 7.5s linear infinite;
 `;
 
-export const IconPlay = styled.div`
+export const IconPlay = styled.div<{
+  actived?: boolean;
+}>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: ${({ theme }) => lighten(0.1, theme.background)};
   cursor: pointer;
-  height: 26px;
-  width: 26px;
+  height: 28px;
+  width: 28px;
   border-radius: 2px;
   align-self: center;
+  ${({ actived = false }) => actived && `filter: brightness(75%);`}
   transition: 0.2s filter;
 
   &:hover {

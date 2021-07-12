@@ -11,6 +11,8 @@ import {
   ImVolumeMute2,
 } from 'react-icons/im';
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
+import { FiRepeat } from 'react-icons/fi';
+import { BiShuffle } from 'react-icons/bi';
 
 import { ThemeContext } from 'styled-components';
 
@@ -70,7 +72,14 @@ const Player = ({
   const seekVolume = createRef<HTMLInputElement>();
   const volumeIndication = createRef<HTMLParagraphElement>();
 
-  const { playingPlaylist, musicIndexPlaying, next, previous } = usePlaylists();
+  const {
+    toggleRepeating,
+    toggleRandomly,
+    isRandomly,
+    isRepeating,
+    next,
+    previous,
+  } = usePlaylists();
 
   useEffect(() => {
     if (audioElement.current) {
@@ -83,7 +92,7 @@ const Player = ({
   function volumeUpdate(e: any) {
     if (audioElement.current) {
       audioElement.current.volume = e.target.value / 100;
-      setVolume(e.target.value)
+      setVolume(e.target.value);
       localStorage.setItem('volume', String(e.target.value));
     }
   }
@@ -99,19 +108,19 @@ const Player = ({
     }
   };
 
-  function resetPlayer() {
-    if (
-      playingPlaylist &&
-      playingPlaylist.musics &&
-      musicIndexPlaying !== null &&
-      musicIndexPlaying !== undefined &&
-      playingPlaylist.musics[musicIndexPlaying + 1]
-    ) {
-      setPlaying(null);
-    } else {
-      setPlaying(null);
-    }
-  }
+  // function resetPlayer() {
+  //   if (
+  //     playingPlaylist &&
+  //     playingPlaylist.musics &&
+  //     musicIndexPlaying !== null &&
+  //     musicIndexPlaying !== undefined &&
+  //     playingPlaylist.musics[musicIndexPlaying + 1]
+  //   ) {
+  //     setPlaying(null);
+  //   } else {
+  //     setPlaying(null);
+  //   }
+  // }
 
   const startAudio = () => {
     ipcRenderer.send('notification', {
@@ -148,7 +157,7 @@ const Player = ({
             onLoadedData={startAudio}
             muted={mute}
             onTimeUpdate={onAudioProgessUpdate}
-            onEnded={resetPlayer}
+            // onEnded={resetPlayer}
             autoPlay
             {...props.audioProps}
           ></audio>
@@ -217,12 +226,18 @@ const Player = ({
                   </ContainerControl>
                 ) : (
                   <ContainerControl>
+                    <IconPlay onClick={toggleRepeating} actived={isRepeating}>
+                      <FiRepeat color={theme.pink} size={20} />
+                    </IconPlay>
                     <IconPlay onClick={previous}>
-                      <MdSkipPrevious color={theme.pink} size={26} />
+                      <MdSkipPrevious color={theme.pink} size={28} />
                     </IconPlay>
                     <ControlPause audioElement={audioElement} />
                     <IconPlay onClick={next}>
-                      <MdSkipNext color={theme.pink} size={26} />
+                      <MdSkipNext color={theme.pink} size={28} />
+                    </IconPlay>
+                    <IconPlay onClick={toggleRandomly} actived={isRandomly}>
+                      <BiShuffle color={theme.pink} size={24} />
                     </IconPlay>
                   </ContainerControl>
                 )}
