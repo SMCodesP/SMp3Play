@@ -25,7 +25,7 @@ export const PlaylistTitle = styled.div`
 `;
 
 export const ThumbnailPlaylist = styled.div`
-  height: fit-content;
+  /* height: fit-content; */
   width: 100%;
   margin: 0;
   display: grid;

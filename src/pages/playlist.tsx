@@ -10,8 +10,6 @@ import ContainerPage from "../components/ContainerPage";
 import VerticalMenu from "../components/VerticalMenu";
 import ListMusicsPlaylist from "../components/ListMusicsPlaylist";
 
-import secondsToDate from "../utils/secondsToDate";
-
 import { Playlist } from "../interfaces/Playlist";
 import { Thumbnail } from "../interfaces/Thumbnail";
 
@@ -26,6 +24,8 @@ import {
   InputTitle,
 } from "../styles/pages/playlist";
 import { ThemeContext } from "styled-components";
+import secondstoMinutes from "../utils/secondsToMinutes";
+import { transparentize } from "polished";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -167,7 +167,7 @@ const PlaylistPage = ({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <SkeletonTheme color={theme.background} highlightColor={theme.comment}>
+      <SkeletonTheme color={theme.background} highlightColor={transparentize(0.65, theme.comment)}>
         <ContainerPage>
           <VerticalMenu selected="playlists" />
 
@@ -200,7 +200,7 @@ const PlaylistPage = ({
                     ) : (
                       <Skeleton
                         height={92}
-                        duration={1.2}
+                        duration={2}
                         key={`thumbnail-${index}`}
                       />
                     )
@@ -240,7 +240,7 @@ const PlaylistPage = ({
                     <li>
                       <strong>Tempo total:</strong>{" "}
                       {playlist.musics && playlist.musics.length !== 0
-                        ? secondsToDate(
+                        ? secondstoMinutes(
                             playlist.musics
                               .map((music) => music.seconds)
                               .reduce((prev, current) => prev + current)

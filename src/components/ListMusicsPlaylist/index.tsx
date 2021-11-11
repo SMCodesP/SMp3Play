@@ -10,13 +10,12 @@ import {
   DroppableProvided,
 } from 'react-beautiful-dnd';
 
-import secondsToDate from '../../utils/secondsToDate';
-
 import { Playlist } from '../../interfaces/Playlist';
 
 import { usePlaylists } from '../../contexts/playlists';
 
 import { ListMusics, MusicItemPlaylist, PlayPlaylistMusic } from './styles';
+import secondstoMinutes from '../../utils/secondsToMinutes';
 
 const initialState = {
   mouseX: null,
@@ -71,9 +70,10 @@ const Music = ({ music, index, play, playlist }: any) => {
             <p
               style={{
                 flex: 1,
+                margin: '0 10px'
               }}
             >
-              {secondsToDate(music.seconds)}
+              {secondstoMinutes(music.seconds)}
             </p>
             <PlayPlaylistMusic
               size={26}
@@ -85,7 +85,7 @@ const Music = ({ music, index, play, playlist }: any) => {
               }}
             />
           </MusicItemPlaylist>
-          {provided.placeholder}
+          {(provided as any).placeholder}
           <Menu
             keepMounted
             open={position.mouseY !== null}
@@ -125,7 +125,7 @@ const Music = ({ music, index, play, playlist }: any) => {
 const MusicList = ({ playlist, play }: any) => {
   return (
     playlist.musics &&
-    playlist.musics.map((music, index) => (
+    playlist.musics.map((music: any, index: any) => (
       <Music
         key={music.videoId}
         music={music}

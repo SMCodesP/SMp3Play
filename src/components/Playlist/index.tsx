@@ -12,6 +12,8 @@ import { usePlaylists } from "../../contexts/playlists";
 
 import { PlaylistContainer, PlaylistTitle, ThumbnailPlaylist } from "./styles";
 import { ThemeContext } from "styled-components";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { transparentize } from "polished";
 
 const initialState = {
   mouseX: null,
@@ -69,7 +71,7 @@ const PlaylistComponent = ({ playlist }: { playlist: Playlist }) => {
   }, []);
 
   return (
-    <>
+    <SkeletonTheme color={theme.background} highlightColor={transparentize(0.65, theme.comment)}>
       <a href={`#/smp3/playlist/${playlist.id}`} className="resetLink">
         <PlaylistContainer onContextMenu={handleClick}>
           <PlaylistTitle>{playlist.name}</PlaylistTitle>
@@ -91,15 +93,20 @@ const PlaylistComponent = ({ playlist }: { playlist: Playlist }) => {
                   )}
                 </ProgressiveImage>
               ) : (
-                <div
-                  style={{
-                    height: 106,
-                    width: "100%",
-                    background: theme.background,
-                    borderRadius: 5,
-                  }}
+                <Skeleton
+                  height={100}
+                  duration={2}
                   key={`thumbnail-${index}`}
                 />
+                // <div
+                //   style={{
+                //     height: 106,
+                //     width: "100%",
+                //     background: theme.background,
+                //     borderRadius: 5,
+                //   }}
+                //   key={`thumbnail-${index}`}
+                // />
               )
             )}
           </ThumbnailPlaylist>
@@ -139,7 +146,7 @@ const PlaylistComponent = ({ playlist }: { playlist: Playlist }) => {
           </span>
         </Menu>
       </a>
-    </>
+    </SkeletonTheme>
   );
 };
 

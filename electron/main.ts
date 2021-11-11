@@ -71,7 +71,7 @@ const downloadMusic = (music: Video, pathFile: string): Promise<string> =>
   });
 
 ipcMain.on("playlistDownload", (_event, arg: Playlist) => {
-  const dir = app.getPath("userData") + `/SMp3Play`;
+  const dir = app.getPath("userData") + `/songs`;
 
   const musicsDownload: Promise<string>[] =
     arg.musics?.map(async (music) => {
@@ -87,7 +87,7 @@ ipcMain.on("playlistDownload", (_event, arg: Playlist) => {
 
 ipcMain.on("video", async (_event, arg: Video) => {
   try {
-    const dir = app.getPath("userData") + `/SMp3Play`;
+    const dir = app.getPath("userData") + `/songs`;
 
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
@@ -100,8 +100,6 @@ ipcMain.on("video", async (_event, arg: Video) => {
       });
       return;
     }
-
-    console.log(arg.url)
 
     const info = await ytdl.getInfo(arg.url);
     const format = ytdl.chooseFormat(info.formats, {
